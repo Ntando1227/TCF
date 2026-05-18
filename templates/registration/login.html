@@ -1,0 +1,70 @@
+﻿{% extends 'base.html' %}
+
+{% block body_class %}public-layout public-site{% endblock %}
+{% block sidebar %}{% endblock %}
+{% block topbar %}{% endblock %}
+
+{% block content %}
+
+<section class='public-auth-page'>
+
+    <nav class='public-topnav auth-nav'>
+        <a class='public-logo' href='{% url "landing_page" %}'>
+            <span>TCF</span>
+            That Corporate Flow
+        </a>
+
+        <div>
+            <a href='{% url "client_landing_page" %}'>Client Workspace</a>
+            <a href='{% url "public_enquiry_form" %}'>Enquiry</a>
+        </div>
+    </nav>
+
+    <section class='auth-layout'>
+        <div class='auth-copy'>
+            <p class='public-pill'>Secure Access</p>
+            <h1>Welcome back.</h1>
+            <p>
+                Sign in to access your workspace, manage requests,
+                review tasks, track delivery, and monitor operations.
+            </p>
+        </div>
+
+        <div class='auth-card'>
+            <h2>Sign in</h2>
+            <p>Use your workspace account details.</p>
+
+            {% if form.errors %}
+                <div class='alert'>Invalid username or password. Please try again.</div>
+            {% endif %}
+
+            <form method='post'>
+                {% csrf_token %}
+
+                <div class='form-group'>
+                    <label for='id_username'>Username</label>
+                    {{ form.username }}
+                </div>
+
+                <div class='form-group'>
+                    <label for='id_password'>Password</label>
+                    {{ form.password }}
+                </div>
+
+                <button class='public-btn primary full-btn' type='submit'>
+                    Sign in
+                </button>
+            </form>
+
+            <a class='auth-link' href='{% url "password_reset" %}'>Forgot password?</a>
+
+            <a class='auth-link' href='{% url "public_enquiry_form" %}'>
+                Not a user yet? Submit an enquiry.
+            </a>
+        </div>
+    </section>
+
+</section>
+
+{% endblock %}
+

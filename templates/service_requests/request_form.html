@@ -1,0 +1,44 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+
+<section class='page-header'>
+    <p class='eyebrow'>Business Intake</p>
+
+    <h2>Submit New Request</h2>
+
+    <p>
+        Submit a structured request for review, processing, or support.
+    </p>
+</section>
+
+<section class='panel form-panel'>
+    <form method='post' enctype='multipart/form-data'>
+        {% csrf_token %}
+
+        <div class='form-grid'>
+            {% for field in form %}
+                <div class='form-group'>
+                    {{ field.label_tag }}
+                    {{ field }}
+
+                    {% if field.errors %}
+                        <div class='field-error'>{{ field.errors }}</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+
+        <div class='hero-actions'>
+            <button class='btn primary' type='submit'>
+                Submit Request
+            </button>
+
+            <a class='btn secondary' href='{% url "request_list" %}'>
+                Cancel
+            </a>
+        </div>
+    </form>
+</section>
+
+{% endblock %}

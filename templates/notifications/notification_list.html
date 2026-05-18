@@ -1,0 +1,80 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+
+<section class='page-header'>
+    <p class='eyebrow'>Notification Centre</p>
+
+    <h2>Notifications</h2>
+
+    <p>
+        See recent activity and alerts assigned to your account.
+    </p>
+
+    <div class='hero-actions'>
+        <a class='btn secondary' href='{% url "mark_all_notifications_read" %}'>
+            Mark All As Read
+        </a>
+    </div>
+</section>
+
+<section class='panel'>
+
+    <div class='panel-header'>
+        <h3>Your Notifications</h3>
+        <p>{{ notifications.count }} notification(s)</p>
+    </div>
+
+    {% if notifications %}
+
+        <div class='notification-list'>
+
+            {% for notification in notifications %}
+
+                <div class='notification-card {% if not notification.is_read %}unread-notification{% endif %}'>
+
+                    <div>
+                        <span class='badge'>
+                            {{ notification.get_notification_type_display }}
+                        </span>
+
+                        <h4>{{ notification.title }}</h4>
+
+                        <p>{{ notification.message }}</p>
+
+                        <p class='muted'>
+                            {{ notification.created_at|date:'d M Y H:i' }}
+                        </p>
+                    </div>
+
+                    <div>
+                        {% if notification.is_read %}
+                            <span class='muted'>Read</span>
+                        {% else %}
+                            <a
+                                class='mini-btn'
+                                href='{% url "mark_notification_read" notification.id %}'
+                            >
+                                Open
+                            </a>
+                        {% endif %}
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class='empty-state'>
+            <h3>No notifications yet</h3>
+            <p>Important platform alerts will appear here.</p>
+        </div>
+
+    {% endif %}
+
+</section>
+
+{% endblock %}

@@ -1,0 +1,307 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+
+<section class='page-header'>
+    <p class='eyebrow'>Internal Operations</p>
+
+    <h2>Operations Board</h2>
+
+    <p>
+        Kanban-style task board for staff work, linked requests, client follow-ups, and deadlines.
+    </p>
+
+    <div class='hero-actions'>
+        <a class='btn primary' href='{% url "task_dashboard" %}'>
+            Task Dashboard
+        </a>
+
+        {% if can_manage_tasks %}
+            <a class='btn secondary' href='{% url "create_task" %}'>
+                Create Task
+            </a>
+        {% endif %}
+    </div>
+</section>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class='alert'>{{ message }}</div>
+    {% endfor %}
+{% endif %}
+
+<section class='stats-grid'>
+    <div class='stat-card'>
+        <span>{{ stats.todo }}</span>
+        <p>To Do</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ stats.in_progress }}</span>
+        <p>In Progress</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ stats.blocked }}</span>
+        <p>Blocked</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ stats.completed }}</span>
+        <p>Completed</p>
+    </div>
+</section>
+
+<section class='kanban-board'>
+
+    <div class='kanban-column'>
+        <div class='kanban-header'>
+            <h3>To Do</h3>
+            <span>{{ stats.todo }}</span>
+        </div>
+
+        {% for task in board.todo %}
+            <div class='kanban-card'>
+                <div class='kanban-card-top'>
+                    <h4>{{ task.title }}</h4>
+
+                    <span class='priority-badge priority-{{ task.priority }}'>
+                        {{ task.get_priority_display }}
+                    </span>
+                </div>
+
+                <p>{{ task.description|truncatechars:90 }}</p>
+
+                <div class='kanban-meta'>
+                    <span>
+                        {% if task.assigned_to %}
+                            {{ task.assigned_to.username }}
+                        {% else %}
+                            Unassigned
+                        {% endif %}
+                    </span>
+
+                    <span>
+                        {% if task.due_date %}
+                            Due {{ task.due_date|date:'d M' }}
+                        {% else %}
+                            No due date
+                        {% endif %}
+                    </span>
+                </div>
+
+                {% if task.is_overdue %}
+                    <span class='overdue-pill'>Overdue</span>
+                {% endif %}
+
+                <div class='quick-move-row'>
+                    <a href='{% url "move_task_status" task.id "in_progress" %}'>In Progress</a>
+                    <a href='{% url "move_task_status" task.id "blocked" %}'>Blocked</a>
+                    <a href='{% url "move_task_status" task.id "completed" %}'>Complete</a>
+                </div>
+
+                <div class='hero-actions small-actions'>
+                    <a class='mini-btn' href='{% url "task_detail" task.id %}'>
+                        Open
+                    </a>
+
+                    <a class='mini-btn' href='{% url "edit_task" task.id %}'>
+                        Edit
+                    </a>
+                </div>
+            </div>
+        {% empty %}
+            <div class='empty-kanban'>
+                No tasks.
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class='kanban-column'>
+        <div class='kanban-header'>
+            <h3>In Progress</h3>
+            <span>{{ stats.in_progress }}</span>
+        </div>
+
+        {% for task in board.in_progress %}
+            <div class='kanban-card'>
+                <div class='kanban-card-top'>
+                    <h4>{{ task.title }}</h4>
+
+                    <span class='priority-badge priority-{{ task.priority }}'>
+                        {{ task.get_priority_display }}
+                    </span>
+                </div>
+
+                <p>{{ task.description|truncatechars:90 }}</p>
+
+                <div class='kanban-meta'>
+                    <span>
+                        {% if task.assigned_to %}
+                            {{ task.assigned_to.username }}
+                        {% else %}
+                            Unassigned
+                        {% endif %}
+                    </span>
+
+                    <span>
+                        {% if task.due_date %}
+                            Due {{ task.due_date|date:'d M' }}
+                        {% else %}
+                            No due date
+                        {% endif %}
+                    </span>
+                </div>
+
+                {% if task.is_overdue %}
+                    <span class='overdue-pill'>Overdue</span>
+                {% endif %}
+
+                <div class='quick-move-row'>
+                    <a href='{% url "move_task_status" task.id "todo" %}'>To Do</a>
+                    <a href='{% url "move_task_status" task.id "blocked" %}'>Blocked</a>
+                    <a href='{% url "move_task_status" task.id "completed" %}'>Complete</a>
+                </div>
+
+                <div class='hero-actions small-actions'>
+                    <a class='mini-btn' href='{% url "task_detail" task.id %}'>
+                        Open
+                    </a>
+
+                    <a class='mini-btn' href='{% url "edit_task" task.id %}'>
+                        Edit
+                    </a>
+                </div>
+            </div>
+        {% empty %}
+            <div class='empty-kanban'>
+                No tasks.
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class='kanban-column'>
+        <div class='kanban-header'>
+            <h3>Blocked</h3>
+            <span>{{ stats.blocked }}</span>
+        </div>
+
+        {% for task in board.blocked %}
+            <div class='kanban-card'>
+                <div class='kanban-card-top'>
+                    <h4>{{ task.title }}</h4>
+
+                    <span class='priority-badge priority-{{ task.priority }}'>
+                        {{ task.get_priority_display }}
+                    </span>
+                </div>
+
+                <p>{{ task.description|truncatechars:90 }}</p>
+
+                <div class='kanban-meta'>
+                    <span>
+                        {% if task.assigned_to %}
+                            {{ task.assigned_to.username }}
+                        {% else %}
+                            Unassigned
+                        {% endif %}
+                    </span>
+
+                    <span>
+                        {% if task.due_date %}
+                            Due {{ task.due_date|date:'d M' }}
+                        {% else %}
+                            No due date
+                        {% endif %}
+                    </span>
+                </div>
+
+                {% if task.is_overdue %}
+                    <span class='overdue-pill'>Overdue</span>
+                {% endif %}
+
+                <div class='quick-move-row'>
+                    <a href='{% url "move_task_status" task.id "todo" %}'>To Do</a>
+                    <a href='{% url "move_task_status" task.id "in_progress" %}'>In Progress</a>
+                    <a href='{% url "move_task_status" task.id "completed" %}'>Complete</a>
+                </div>
+
+                <div class='hero-actions small-actions'>
+                    <a class='mini-btn' href='{% url "task_detail" task.id %}'>
+                        Open
+                    </a>
+
+                    <a class='mini-btn' href='{% url "edit_task" task.id %}'>
+                        Edit
+                    </a>
+                </div>
+            </div>
+        {% empty %}
+            <div class='empty-kanban'>
+                No tasks.
+            </div>
+        {% endfor %}
+    </div>
+
+    <div class='kanban-column'>
+        <div class='kanban-header'>
+            <h3>Completed</h3>
+            <span>{{ stats.completed }}</span>
+        </div>
+
+        {% for task in board.completed %}
+            <div class='kanban-card completed-card'>
+                <div class='kanban-card-top'>
+                    <h4>{{ task.title }}</h4>
+
+                    <span class='priority-badge priority-{{ task.priority }}'>
+                        {{ task.get_priority_display }}
+                    </span>
+                </div>
+
+                <p>{{ task.description|truncatechars:90 }}</p>
+
+                <div class='kanban-meta'>
+                    <span>
+                        {% if task.assigned_to %}
+                            {{ task.assigned_to.username }}
+                        {% else %}
+                            Unassigned
+                        {% endif %}
+                    </span>
+
+                    <span>
+                        {% if task.completed_at %}
+                            Done {{ task.completed_at|date:'d M' }}
+                        {% else %}
+                            Completed
+                        {% endif %}
+                    </span>
+                </div>
+
+                <div class='quick-move-row'>
+                    <a href='{% url "move_task_status" task.id "todo" %}'>Reopen</a>
+                    <a href='{% url "move_task_status" task.id "in_progress" %}'>In Progress</a>
+                    <a href='{% url "move_task_status" task.id "blocked" %}'>Blocked</a>
+                </div>
+
+                <div class='hero-actions small-actions'>
+                    <a class='mini-btn' href='{% url "task_detail" task.id %}'>
+                        Open
+                    </a>
+
+                    <a class='mini-btn' href='{% url "edit_task" task.id %}'>
+                        Edit
+                    </a>
+                </div>
+            </div>
+        {% empty %}
+            <div class='empty-kanban'>
+                No tasks.
+            </div>
+        {% endfor %}
+    </div>
+
+</section>
+
+{% endblock %}

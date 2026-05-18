@@ -1,0 +1,115 @@
+﻿{% extends 'base.html' %}
+
+{% block page_title %}
+Resolve Task
+{% endblock %}
+
+{% block content %}
+
+<section class='form-hero'>
+    <div>
+        <p class='eyebrow'>Task Resolution</p>
+        <h2>Resolve task and attach deliverable.</h2>
+        <p>
+            Upload the completed file, add handover notes, or provide a link
+            to the final document before closing the task.
+        </p>
+    </div>
+
+    <div class='form-hero-card'>
+        <span>✓</span>
+        <p>Complete task</p>
+    </div>
+</section>
+
+<section class='form-layout'>
+
+    <div class='form-main-card'>
+        <div class='panel-header'>
+            <h3>{{ task.title }}</h3>
+            <p>{{ task.description|default:'Add the final output and resolution notes below.' }}</p>
+        </div>
+
+        <form method='post' enctype='multipart/form-data'>
+            {% csrf_token %}
+
+            <div class='resolution-upload-box'>
+                <div>
+                    <strong>Upload completed file</strong>
+                    <p>
+                        Example: signed contract, final report, invoice,
+                        proposal, spreadsheet, or completed client document.
+                    </p>
+                </div>
+
+                <div class='clean-form-grid one-col'>
+                    {% for field in form %}
+                        <div class='clean-form-group'>
+                            {{ field.label_tag }}
+                            {{ field }}
+
+                            {% if field.help_text %}
+                                <small>{{ field.help_text }}</small>
+                            {% endif %}
+
+                            {% if field.errors %}
+                                <div class='field-error'>{{ field.errors }}</div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class='form-action-row'>
+                <button class='btn primary' type='submit'>
+                    Resolve Task
+                </button>
+
+                <a class='btn secondary' href='{% url "task_detail" task.id %}'>
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <aside class='form-side-card'>
+        <div class='panel-header'>
+            <h3>Task Summary</h3>
+            <p>Resolution context.</p>
+        </div>
+
+        <div class='form-summary-list'>
+            <div>
+                <span>Status</span>
+                <strong>{{ task.get_status_display }}</strong>
+            </div>
+
+            <div>
+                <span>Priority</span>
+                <strong>{{ task.get_priority_display }}</strong>
+            </div>
+
+            <div>
+                <span>Assigned To</span>
+                <strong>{{ task.assigned_to.username|default:'Unassigned' }}</strong>
+            </div>
+
+            {% if task.linked_request %}
+                <div>
+                    <span>Linked Request</span>
+                    <strong>{{ task.linked_request.title }}</strong>
+                </div>
+            {% endif %}
+
+            {% if task.linked_client %}
+                <div>
+                    <span>Client</span>
+                    <strong>{{ task.linked_client.client_name }}</strong>
+                </div>
+            {% endif %}
+        </div>
+    </aside>
+
+</section>
+
+{% endblock %}

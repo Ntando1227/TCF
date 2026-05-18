@@ -1,0 +1,102 @@
+﻿{% extends 'base.html' %}
+
+{% block body_class %}public-layout public-site{% endblock %}
+{% block sidebar %}{% endblock %}
+{% block topbar %}{% endblock %}
+
+{% block content %}
+
+<section class='minimal-public-page'>
+
+    <nav class='minimal-public-nav'>
+        <a class='minimal-public-brand' href='{% url "landing_page" %}'>
+            <span>TCF</span>
+            That Corporate Flow
+        </a>
+
+        <div>
+            <a href='{% url "client_landing_page" %}'>Client Workspace</a>
+            <a href='{% url "public_enquiry_form" %}'>Enquiry</a>
+            <a href='{% url "login" %}'>Sign in</a>
+            <a class='minimal-nav-button' href='{% url "login" %}'>Open Workspace</a>
+        </div>
+    </nav>
+
+    <section class='minimal-public-hero'>
+        <div class='minimal-hero-copy'>
+            <p class='public-pill'>Business Operations Platform</p>
+
+            <h1>Bring structure to client work.</h1>
+
+            <p>
+                Manage requests, documents, tasks, approvals, delivery,
+                and operational follow-through from one focused workspace.
+            </p>
+
+            <div class='public-actions'>
+                <a class='public-btn primary' href='{% url "login" %}'>Open Workspace</a>
+                <a class='public-btn secondary' href='{% url "client_landing_page" %}'>Client Workspace</a>
+            </div>
+        </div>
+
+        <div class='minimal-product-preview'>
+            <div class='preview-top'>
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+
+            <div class='preview-content'>
+                <div class='preview-card-row'>
+                    <small>Request</small>
+                    <strong>Client document review</strong>
+                    <p>Assigned to operations · In progress</p>
+                </div>
+
+                <div class='preview-card-row'>
+                    <small>Task</small>
+                    <strong>Prepare response package</strong>
+                    <p>Checklist active · Due today</p>
+                </div>
+
+                <div class='preview-card-row'>
+                    <small>Delivery</small>
+                    <strong>Response ready</strong>
+                    <p>Attachment and link available</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class='minimal-feature-grid'>
+        <div>
+            <span>01</span>
+            <h3>Capture requests</h3>
+            <p>Receive enquiries and client requests with clear context.</p>
+        </div>
+
+        <div>
+            <span>02</span>
+            <h3>Coordinate work</h3>
+            <p>Assign tasks, track progress, and manage team follow-through.</p>
+        </div>
+
+        <div>
+            <span>03</span>
+            <h3>Deliver clearly</h3>
+            <p>Send responses, files, links, and completion updates.</p>
+        </div>
+    </section>
+
+    <section class='minimal-final-cta'>
+        <h2>Run client operations with less noise.</h2>
+
+        <div class='public-actions center'>
+            <a class='public-btn primary' href='{% url "login" %}'>Open Workspace</a>
+            <a class='public-btn secondary' href='{% url "public_enquiry_form" %}'>Submit Enquiry</a>
+        </div>
+    </section>
+
+</section>
+
+{% endblock %}

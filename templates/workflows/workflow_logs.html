@@ -1,0 +1,90 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+
+<section class='page-header'>
+    <p class='eyebrow'>PowerShell Workflow Logs</p>
+
+    <h2>Workflow Activity</h2>
+
+    <p>
+        See every automation action triggered inside
+        That Corporate Flow.
+    </p>
+
+    <div class='hero-actions'>
+        <a class='btn primary' href='{% url "workflow_list" %}'>
+            Back to Workflows
+        </a>
+
+        {% if can_run_workflow %}
+            <a class='btn secondary' href='{% url "run_backup_now" %}'>
+                Run Backup Now
+            </a>
+        {% endif %}
+    </div>
+</section>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class='alert'>
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+<section class='panel'>
+
+    <div class='panel-header'>
+        <h3>Recent Workflow Activity</h3>
+        <p>{{ logs.count }} log(s)</p>
+    </div>
+
+    {% if logs %}
+
+    <div class='table-wrap'>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>Workflow</th>
+                    <th>Message</th>
+                    <th>Date</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for log in logs %}
+
+                <tr>
+                    <td>{{ log.workflow.name }}</td>
+                    <td>{{ log.message }}</td>
+                    <td>{{ log.created_at|date:'d M Y H:i' }}</td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+    {% else %}
+
+    <div class='empty-state'>
+        <h3>No workflow activity yet</h3>
+
+        <p>
+            Upload files, generate invoices, create folders,
+            or run a backup to trigger PowerShell automations.
+        </p>
+    </div>
+
+    {% endif %}
+
+</section>
+
+{% endblock %}

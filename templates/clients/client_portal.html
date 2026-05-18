@@ -1,0 +1,173 @@
+﻿{% extends 'base.html' %}
+
+{% block page_title %}
+Client Portal
+{% endblock %}
+
+{% block content %}
+
+<section class='client-clean-hero'>
+    <div>
+        <p class='eyebrow'>Client Workspace</p>
+        <h2>Welcome back, {{ user.username }}.</h2>
+        <p>
+            Track requests, view delivered responses, access files,
+            and keep your client workspace organised.
+        </p>
+    </div>
+
+    <div class='client-clean-actions'>
+        <a class='btn primary' href='{% url "create_request" %}'>Submit Request</a>
+        <a class='btn secondary' href='{% url "request_list" %}'>View Requests</a>
+    </div>
+</section>
+
+<section class='client-kpi-grid'>
+    <div class='client-kpi-card'>
+        <span>{{ stats.requests }}</span>
+        <p>Total Requests</p>
+    </div>
+
+    <div class='client-kpi-card'>
+        <span>{{ stats.open_requests }}</span>
+        <p>Open Requests</p>
+    </div>
+
+    <div class='client-kpi-card'>
+        <span>{{ stats.responses }}</span>
+        <p>Responses</p>
+    </div>
+
+    <div class='client-kpi-card'>
+        <span>{{ stats.files }}</span>
+        <p>Files</p>
+    </div>
+</section>
+
+<section class='client-clean-layout'>
+
+    <div class='client-clean-main'>
+
+        <section class='client-clean-panel'>
+            <div class='panel-header'>
+                <h3>Recent Deliveries</h3>
+                <p>Latest files, links, and responses from the team.</p>
+            </div>
+
+            <div class='client-list'>
+                {% for response in responses %}
+                    <div class='client-list-item'>
+                        <div>
+                            <strong>{{ response.service_request.title }}</strong>
+                            <p>{{ response.response_message|default:'Response submitted.'|truncatechars:150 }}</p>
+
+                            <div class='client-meta-row'>
+                                <span>{{ response.responded_at|date:'d M Y H:i' }}</span>
+                                <span class='confirmation-badge confirmation-{{ response.confirmation_status }}'>
+                                    {{ response.get_confirmation_status_display }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class='client-item-actions'>
+                            <a class='mini-btn' href='{% url "request_detail" response.service_request.id %}'>Open</a>
+
+                            {% if response.response_attachment %}
+                                <a class='mini-btn' href='{{ response.response_attachment.url }}' target='_blank'>File</a>
+                            {% endif %}
+
+                            {% if response.response_link %}
+                                <a class='mini-btn' href='{{ response.response_link }}' target='_blank'>Link</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class='clean-empty-state'>
+                        <div class='empty-icon'>↗</div>
+                        <h3>No deliveries yet</h3>
+                        <p>Completed responses and delivered documents will appear here.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class='client-clean-panel'>
+            <div class='panel-header'>
+                <h3>My Requests</h3>
+                <p>Recently submitted requests and their current status.</p>
+            </div>
+
+            <div class='client-list'>
+                {% for request_item in requests %}
+                    <a class='client-list-link' href='{% url "request_detail" request_item.id %}'>
+                        <div>
+                            <strong>{{ request_item.title }}</strong>
+                            <p>{{ request_item.get_request_type_display }} · {{ request_item.created_at|date:'d M Y' }}</p>
+                        </div>
+
+                        <span class='status-pill status-{{ request_item.status }}'>
+                            {{ request_item.get_status_display }}
+                        </span>
+                    </a>
+                {% empty %}
+                    <div class='clean-empty-state'>
+                        <div class='empty-icon'>+</div>
+                        <h3>No requests yet</h3>
+                        <p>Submit your first request to begin tracking work.</p>
+                        <a class='btn primary' href='{% url "create_request" %}'>Submit Request</a>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+
+    </div>
+
+    <aside class='client-clean-side'>
+
+        <section class='client-clean-panel'>
+            <div class='panel-header'>
+                <h3>Client Folders</h3>
+                <p>Profiles linked to your account.</p>
+            </div>
+
+            <div class='client-mini-list'>
+                {% for folder in folders %}
+                    <a href='{% url "client_profile" folder.id %}'>
+                        <strong>{{ folder.client_name }}</strong>
+                        <span>{{ folder.client_email|default:'No email' }}</span>
+                    </a>
+                {% empty %}
+                    <div class='clean-empty-state compact-empty'>
+                        <h3>No folders</h3>
+                        <p>Your linked client folders will appear here.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class='client-clean-panel'>
+            <div class='panel-header'>
+                <h3>Recent Files</h3>
+                <p>Available client files.</p>
+            </div>
+
+            <div class='client-mini-list'>
+                {% for file in files %}
+                    <a href='{% url "preview_client_file" file.id %}'>
+                        <strong>{{ file.title }}</strong>
+                        <span>{{ file.client_folder.client_name }} · {{ file.get_status_display }}</span>
+                    </a>
+                {% empty %}
+                    <div class='clean-empty-state compact-empty'>
+                        <h3>No files</h3>
+                        <p>Uploaded and delivered files will appear here.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+
+    </aside>
+
+</section>
+
+{% endblock %}

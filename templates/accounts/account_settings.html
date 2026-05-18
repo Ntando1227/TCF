@@ -1,0 +1,109 @@
+﻿{% extends 'base.html' %}
+
+{% block page_title %}
+Account Settings
+{% endblock %}
+
+{% block content %}
+
+<section class='settings-hero'>
+    <div>
+        <p class='eyebrow'>Account</p>
+        <h2>Settings</h2>
+        <p>Manage your profile details, role information, and workspace preferences.</p>
+    </div>
+
+    <div class='settings-role-card'>
+        <span>{{ user.get_role_display|default:user.role }}</span>
+        <p>Current Role</p>
+    </div>
+</section>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class='alert'>{{ message }}</div>
+    {% endfor %}
+{% endif %}
+
+<section class='settings-layout'>
+
+    <div class='settings-panel'>
+        <div class='panel-header'>
+            <h3>Profile Details</h3>
+            <p>Basic account information.</p>
+        </div>
+
+        <form method='post'>
+            {% csrf_token %}
+
+            <div class='form-grid'>
+                <div class='form-group'>
+                    <label>Username</label>
+                    <input class='form-control' type='text' value='{{ user.username }}' disabled>
+                </div>
+
+                <div class='form-group'>
+                    <label>Role</label>
+                    <input class='form-control' type='text' value='{{ user.get_role_display|default:user.role }}' disabled>
+                </div>
+
+                <div class='form-group'>
+                    <label>First Name</label>
+                    <input class='form-control' type='text' name='first_name' value='{{ user.first_name }}'>
+                </div>
+
+                <div class='form-group'>
+                    <label>Last Name</label>
+                    <input class='form-control' type='text' name='last_name' value='{{ user.last_name }}'>
+                </div>
+
+                <div class='form-group'>
+                    <label>Email</label>
+                    <input class='form-control' type='email' name='email' value='{{ user.email }}'>
+                </div>
+
+                <div class='form-group'>
+                    <label>Theme Preference</label>
+                    <select class='form-control' name='theme_preference'>
+                        <option value='dark'>Dark Premium</option>
+                        <option value='light'>Light</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class='hero-actions'>
+                <button class='btn primary' type='submit'>Save Settings</button>
+
+                {% if user.role == 'client' %}
+                    <a class='btn secondary' href='{% url "client_portal" %}'>Back to Client Portal</a>
+                {% else %}
+                    <a class='btn secondary' href='{% url "command_centre" %}'>Back to Command Centre</a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <aside class='settings-panel'>
+        <div class='panel-header'>
+            <h3>Workspace Access</h3>
+            <p>Your role controls what appears in the system.</p>
+        </div>
+
+        <div class='settings-access-list'>
+            {% if user.role == 'client' %}
+                <div><strong>Client Portal</strong><span>Enabled</span></div>
+                <div><strong>Request Tracking</strong><span>Enabled</span></div>
+                <div><strong>Operations Tools</strong><span>Hidden</span></div>
+                <div><strong>Admin Tools</strong><span>Hidden</span></div>
+            {% else %}
+                <div><strong>Operations Workspace</strong><span>Enabled</span></div>
+                <div><strong>Client Management</strong><span>Enabled</span></div>
+                <div><strong>Insights</strong><span>Enabled</span></div>
+                <div><strong>Client Portal Preview</strong><span>Enabled</span></div>
+            {% endif %}
+        </div>
+    </aside>
+
+</section>
+
+{% endblock %}

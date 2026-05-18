@@ -1,0 +1,32 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+
+<section class='success-page'>
+    <div class='success-card'>
+
+        <div class='success-icon'>
+            ✓
+        </div>
+
+        <h1>Enquiry Submitted Successfully</h1>
+
+        <p>
+            Your enquiry has been received.
+            A staff member will review it shortly.
+        </p>
+
+        <div class='hero-actions'>
+            <a class='btn primary' href='/'>
+                Back Home
+            </a>
+
+            <a class='btn secondary' href='{% url "public_enquiry_form" %}'>
+                Submit Another Enquiry
+            </a>
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}

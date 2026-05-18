@@ -1,0 +1,114 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+
+<section class='page-header'>
+    <p class='eyebrow'>Public Enquiry</p>
+
+    <h2>{{ enquiry.title }}</h2>
+
+    <p>
+        Submitted by {{ enquiry.full_name }} on {{ enquiry.created_at|date:'d M Y H:i' }}
+    </p>
+
+    <div class='hero-actions'>
+        <a class='btn secondary' href='{% url "public_enquiry_list" %}'>Back to Enquiries</a>
+
+        {% if enquiry.status != 'reviewed' %}
+            <a class='btn primary' href='{% url "mark_public_enquiry_reviewed" enquiry.id %}'>Mark Reviewed</a>
+        {% endif %}
+
+        {% if enquiry.status != 'converted' %}
+            <a class='btn primary' href='{% url "convert_public_enquiry_to_request" enquiry.id %}'>Convert to Request</a>
+        {% endif %}
+
+        {% if enquiry.status != 'closed' %}
+            <a class='btn danger' href='{% url "mark_public_enquiry_closed" enquiry.id %}'>Close</a>
+        {% endif %}
+    </div>
+</section>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class='alert'>{{ message }}</div>
+    {% endfor %}
+{% endif %}
+
+<section class='stats-grid'>
+    <div class='stat-card'>
+        <span>{{ enquiry.get_status_display }}</span>
+        <p>Status</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ enquiry.get_priority_display }}</span>
+        <p>Priority</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ enquiry.get_enquiry_type_display }}</span>
+        <p>Type</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{% if enquiry.converted_request %}Yes{% else %}No{% endif %}</span>
+        <p>Converted</p>
+    </div>
+</section>
+
+<section class='panel'>
+    <div class='panel-header'>
+        <h3>Contact Details</h3>
+        <p>External client information</p>
+    </div>
+
+    <div class='request-detail-grid'>
+        <div>
+            <p class='muted'>Full Name</p>
+            <h4>{{ enquiry.full_name }}</h4>
+        </div>
+
+        <div>
+            <p class='muted'>Email</p>
+            <h4>{{ enquiry.email }}</h4>
+        </div>
+
+        <div>
+            <p class='muted'>Phone</p>
+            <h4>{{ enquiry.phone_number|default:'None' }}</h4>
+        </div>
+
+        <div>
+            <p class='muted'>Company</p>
+            <h4>{{ enquiry.company_name|default:'None' }}</h4>
+        </div>
+    </div>
+</section>
+
+<section class='panel'>
+    <div class='panel-header'>
+        <h3>Enquiry Details</h3>
+        <p>Submitted message</p>
+    </div>
+
+    <p class='request-description'>{{ enquiry.description }}</p>
+
+    {% if enquiry.attachment %}
+        <div class='hero-actions'>
+            <a class='btn primary' href='{{ enquiry.attachment.url }}' target='_blank'>Open Attachment</a>
+        </div>
+    {% endif %}
+</section>
+
+{% if enquiry.converted_request %}
+<section class='panel'>
+    <div class='panel-header'>
+        <h3>Converted Request</h3>
+        <p>This enquiry has been converted.</p>
+    </div>
+
+    <a class='btn primary' href='{% url "request_detail" enquiry.converted_request.id %}'>Open Converted Request</a>
+</section>
+{% endif %}
+
+{% endblock %}

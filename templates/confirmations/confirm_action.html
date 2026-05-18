@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section class='page-header'>
+    <p class='eyebrow'>Confirmation</p>
+    <h2>{{ title }}</h2>
+    <p>{{ message }}</p>
+
+    <div class='hero-actions'>
+        <a
+            class='btn {% if danger %}danger-btn{% else %}primary{% endif %}'
+            href='{% url action_url object_id %}'
+        >
+            {{ button_text }}
+        </a>
+
+        {% if cancel_id %}
+            <a class='btn secondary' href='{% url cancel_url cancel_id %}'>Cancel</a>
+        {% else %}
+            <a class='btn secondary' href='{% url cancel_url %}'>Cancel</a>
+        {% endif %}
+    </div>
+</section>
+
+<section class='panel'>
+    <h3>Before you continue</h3>
+    <p>
+        This action will change records inside That Corporate Flow.
+        Use Cancel if you are not sure.
+    </p>
+</section>
+
+{% endblock %}

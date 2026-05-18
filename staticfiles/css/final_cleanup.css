@@ -1,0 +1,294 @@
+﻿
+/* ============================================================
+   FINAL UI CLEANUP: EMPTY STATES + TYPOGRAPHY + SPACING
+   Put last so it overrides older messy CSS
+============================================================ */
+
+:root {
+    --bg: #0a0f1c;
+    --panel: #111827;
+    --panel-soft: rgba(255,255,255,0.035);
+    --border: rgba(255,255,255,0.06);
+    --border-soft: rgba(255,255,255,0.10);
+    --text: #f8fafc;
+    --muted: #94a3b8;
+    --muted-dark: #64748b;
+    --gold: #d4af37;
+    --gold-soft: rgba(212,175,55,0.12);
+    --danger: #ef4444;
+    --success: #22c55e;
+}
+
+/* TYPOGRAPHY RESET */
+
+body {
+    background: var(--bg);
+    color: var(--text);
+}
+
+h1 {
+    font-size: clamp(34px, 4vw, 58px) !important;
+    line-height: 1.04 !important;
+    letter-spacing: -0.05em !important;
+    font-weight: 750 !important;
+}
+
+h2 {
+    font-size: clamp(28px, 3vw, 44px) !important;
+    line-height: 1.08 !important;
+    letter-spacing: -0.04em !important;
+    font-weight: 750 !important;
+}
+
+h3 {
+    font-size: clamp(20px, 2vw, 28px) !important;
+    line-height: 1.2 !important;
+    letter-spacing: -0.025em !important;
+}
+
+h4 {
+    font-size: 17px !important;
+    line-height: 1.25 !important;
+}
+
+p {
+    line-height: 1.72;
+}
+
+.page-shell {
+    padding: 26px !important;
+}
+
+/* UNIVERSAL PANELS */
+
+.panel,
+.command-panel,
+.focus-panel,
+.settings-panel,
+.auth-card,
+.client-flow-card,
+.public-preview-card,
+.simple-launcher-card,
+.focus-kpi-card,
+.stat-card,
+.notification-card,
+.global-result-card,
+.ai-action-card,
+.module-card,
+.kanban-card,
+.client-delivery-card,
+.announcement-card {
+    background: var(--panel) !important;
+    border: 1px solid var(--border) !important;
+    box-shadow: none !important;
+    border-radius: 22px !important;
+}
+
+.panel,
+.command-panel,
+.focus-panel,
+.settings-panel,
+.auth-card,
+.client-flow-card,
+.public-preview-card {
+    padding: 24px !important;
+}
+
+/* HERO CLEANUP */
+
+.focus-hero,
+.simple-dashboard-hero,
+.settings-hero,
+.health-hero,
+.command-hero,
+.public-final-cta,
+.client-benefit-section,
+.public-feature-section {
+    border-radius: 26px !important;
+    padding: 28px !important;
+    background: var(--panel) !important;
+    border: 1px solid var(--border) !important;
+    box-shadow: none !important;
+}
+
+.focus-copy h2,
+.command-hero h2,
+.health-hero h1,
+.simple-dashboard-hero h2,
+.settings-hero h2 {
+    font-size: clamp(34px, 4.5vw, 62px) !important;
+}
+
+/* KPI CLEANUP */
+
+.focus-kpi-card h3,
+.command-kpi-card h3,
+.focus-score span,
+.command-risk-card span,
+.health-score-card span {
+    font-size: 40px !important;
+}
+
+.focus-score,
+.command-risk-card,
+.health-score-card,
+.settings-role-card {
+    border-radius: 22px !important;
+    background: var(--panel-soft) !important;
+    border: 1px solid var(--border) !important;
+    box-shadow: none !important;
+}
+
+/* EMPTY STATES */
+
+.empty-state,
+.empty-panel,
+.compact-empty,
+.table-empty-state,
+.clean-empty-state {
+    padding: 38px;
+    border-radius: 24px;
+    background: var(--panel);
+    border: 1px dashed var(--border-soft);
+    text-align: center;
+    margin: 18px 0;
+}
+
+.empty-state h3,
+.empty-panel h3,
+.compact-empty h3,
+.table-empty-state h3,
+.clean-empty-state h3 {
+    margin: 0 0 10px;
+    color: var(--text);
+    font-size: 24px !important;
+    letter-spacing: -0.03em;
+}
+
+.empty-state p,
+.empty-panel p,
+.compact-empty p,
+.table-empty-state p,
+.clean-empty-state p {
+    margin: 0 auto;
+    color: var(--muted);
+    line-height: 1.7;
+    max-width: 620px;
+}
+
+.empty-state .btn,
+.empty-panel .btn,
+.table-empty-state .btn,
+.clean-empty-state .btn {
+    margin-top: 20px;
+}
+
+.empty-icon {
+    width: 70px;
+    height: 70px;
+    margin: 0 auto 18px;
+    border-radius: 20px;
+    display: grid;
+    place-items: center;
+    background: rgba(255,255,255,0.04);
+    color: var(--gold);
+    font-size: 28px;
+}
+
+/* TABLE EMPTY ROW */
+
+.empty-table-row td {
+    padding: 0 !important;
+    border: none !important;
+}
+
+/* BUTTON CONSISTENCY */
+
+.btn,
+.mini-btn,
+.public-btn,
+.slack-btn {
+    box-shadow: none !important;
+}
+
+.btn.primary,
+.public-btn.primary,
+.slack-btn.primary {
+    background: var(--gold) !important;
+    color: #0a0f1c !important;
+    border-color: var(--gold) !important;
+}
+
+.btn.secondary,
+.public-btn.secondary,
+.slack-btn.secondary {
+    background: rgba(255,255,255,0.04) !important;
+    color: var(--text) !important;
+    border-color: rgba(255,255,255,0.12) !important;
+}
+
+/* FORM CONSISTENCY */
+
+input,
+textarea,
+select,
+.form-control {
+    background: rgba(255,255,255,0.045) !important;
+    border: 1px solid rgba(255,255,255,0.08) !important;
+    color: var(--text) !important;
+    border-radius: 14px !important;
+}
+
+input:focus,
+textarea:focus,
+select:focus,
+.form-control:focus {
+    outline: none !important;
+    border-color: rgba(212,175,55,0.35) !important;
+}
+
+/* PUBLIC PAGE CLEANUP */
+
+.public-layout .app-shell {
+    display: block !important;
+    width: 100% !important;
+    min-height: 100vh !important;
+}
+
+.public-layout .main-shell {
+    width: 100% !important;
+    min-height: 100vh !important;
+}
+
+.public-layout .page-shell {
+    width: 100% !important;
+    max-width: none !important;
+    padding: 0 !important;
+}
+
+.public-layout .topbar-minimal {
+    display: none !important;
+}
+
+.public-page,
+.public-auth-page,
+.slack-page {
+    width: 100% !important;
+    min-height: 100vh !important;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 1000px) {
+    .page-shell {
+        padding: 18px !important;
+    }
+
+    h1 {
+        font-size: clamp(30px, 8vw, 44px) !important;
+    }
+
+    h2 {
+        font-size: clamp(26px, 7vw, 38px) !important;
+    }
+}

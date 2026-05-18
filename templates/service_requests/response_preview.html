@@ -1,0 +1,85 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+
+<section class='page-header'>
+    <p class='eyebrow'>Response Preview</p>
+
+    <h2>{{ service_request.title }}</h2>
+
+    <p>
+        Response from {{ response.responded_by.username|default:'Staff' }}
+        on {{ response.responded_at|date:'d M Y H:i' }}
+    </p>
+
+    <div class='hero-actions'>
+        <a class='btn primary' href='{% url "download_response_attachment" response.id %}'>
+            Download Attachment
+        </a>
+
+        <a class='btn secondary' href='{% url "request_detail" service_request.id %}'>
+            Back to Request
+        </a>
+    </div>
+</section>
+
+<section class='panel preview-panel'>
+
+    {% if preview_type == 'pdf' %}
+
+        <div class='panel-header'>
+            <h3>PDF Preview</h3>
+            <p>Viewing response attachment inside the app</p>
+        </div>
+
+        <iframe
+            class='pdf-preview'
+            src='{% url "stream_response_attachment" response.id %}'
+        ></iframe>
+
+    {% elif preview_type == 'image' %}
+
+        <div class='panel-header'>
+            <h3>Image Preview</h3>
+            <p>Viewing response attachment inside the app</p>
+        </div>
+
+        <div class='image-preview-wrap'>
+            <img
+                class='image-preview'
+                src='{% url "stream_response_attachment" response.id %}'
+                alt='Response attachment'
+            >
+        </div>
+
+    {% elif preview_type == 'text' %}
+
+        <div class='panel-header'>
+            <h3>Text Preview</h3>
+            <p>Viewing response attachment contents</p>
+        </div>
+
+        <pre class='text-preview'>{{ text_content }}</pre>
+
+    {% else %}
+
+        <div class='empty-state'>
+            <h3>Preview not available</h3>
+
+            <p>
+                This response attachment type cannot be previewed in the browser yet.
+                You can still download the file.
+            </p>
+
+            <div class='hero-actions'>
+                <a class='btn primary' href='{% url "download_response_attachment" response.id %}'>
+                    Download Attachment
+                </a>
+            </div>
+        </div>
+
+    {% endif %}
+
+</section>
+
+{% endblock %}

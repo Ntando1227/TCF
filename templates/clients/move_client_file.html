@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<section class='page-header'>
+    <p class='eyebrow'>File Movement</p>
+
+    <h2>Move File</h2>
+
+    <p>
+        Move <strong>{{ client_file.title }}</strong>
+        to another folder category.
+    </p>
+</section>
+
+<section class='panel form-panel'>
+
+    <form method='post'>
+
+        {% csrf_token %}
+
+        <div class='form-group'>
+            <label>Move To Folder</label>
+            {{ form.subfolder }}
+        </div>
+
+        <div class='hero-actions'>
+
+            <button class='btn primary' type='submit'>
+                Move File
+            </button>
+
+            <a
+                class='btn secondary'
+                href='{% url "client_folder_detail" folder.id %}'
+            >
+                Cancel
+            </a>
+
+        </div>
+
+    </form>
+
+</section>
+
+{% endblock %}

@@ -1,0 +1,226 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+
+<section class='hero polished-hero'>
+    <div>
+        <p class='eyebrow'>Business Operations Platform</p>
+
+        <h2>Organised client work. Clearer processes. Better follow-through.</h2>
+
+        <p class='hero-text'>
+            That Corporate Flow helps teams manage client requests, documents,
+            tasks, approvals, and operational activity in one clean workspace.
+        </p>
+
+        <div class='hero-actions'>
+            <a class='btn primary' href='{% url "my_work_dashboard" %}'>
+                My Work
+            </a>
+
+            <a class='btn secondary' href='{% url "request_list" %}'>
+                View Requests
+            </a>
+
+            <a class='btn secondary' href='{% url "client_folder_list" %}'>
+                Client Folders
+            </a>
+        </div>
+    </div>
+
+    <div class='hero-card market-card'>
+        <p class='eyebrow'>Today’s Focus</p>
+
+        <h3>Keep every request moving.</h3>
+
+        <p>
+            Track what is pending, who owns it, what needs attention,
+            and what has already been delivered.
+        </p>
+
+        <div class='flow-line'>
+            <span>Intake</span>
+            <span>Tasks</span>
+            <span>Delivery</span>
+            <span>Insights</span>
+        </div>
+    </div>
+</section>
+
+<section class='stats-grid'>
+    <div class='stat-card'>
+        <span>{{ stats.clients_created }}</span>
+        <p>Client Folders</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ stats.total_files }}</span>
+        <p>Total Files</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ stats.documents_generated }}</span>
+        <p>Documents Generated</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ stats.workflows_run }}</span>
+        <p>Workflow Runs</p>
+    </div>
+</section>
+
+<section class='module-grid dashboard-grid'>
+
+    <div class='module-card featured-module'>
+        <h4>My Work</h4>
+        <p>See your assigned tasks, overdue work, service requests, and personal workload.</p>
+
+        <div class='hero-actions small-actions'>
+            <a class='mini-btn' href='{% url "my_work_dashboard" %}'>
+                Open My Work
+            </a>
+        </div>
+    </div>
+
+    <div class='module-card'>
+        <h4>Service Requests</h4>
+        <p>Capture, review, assign, respond to, and complete client requests.</p>
+
+        <div class='hero-actions small-actions'>
+            <a class='mini-btn' href='{% url "request_list" %}'>
+                Open Requests
+            </a>
+        </div>
+    </div>
+
+    <div class='module-card'>
+        <h4>Client Profiles</h4>
+        <p>View client folders, files, requests, documents, and relationship history.</p>
+
+        <div class='hero-actions small-actions'>
+            <a class='mini-btn' href='{% url "client_folder_list" %}'>
+                Open Clients
+            </a>
+        </div>
+    </div>
+
+    <div class='module-card'>
+        <h4>Operations Board</h4>
+        <p>Move work through To Do, In Progress, Blocked, and Completed stages.</p>
+
+        <div class='hero-actions small-actions'>
+            <a class='mini-btn' href='{% url "task_board" %}'>
+                Open Board
+            </a>
+        </div>
+    </div>
+
+    <div class='module-card'>
+        <h4>Analytics</h4>
+        <p>Understand requests, response activity, downloads, confirmations, and trends.</p>
+
+        <div class='hero-actions small-actions'>
+            <a class='mini-btn' href='{% url "request_analytics_dashboard" %}'>
+                View Analytics
+            </a>
+        </div>
+    </div>
+
+    <div class='module-card'>
+        <h4>AI Summary Centre</h4>
+        <p>Generate simple operational summaries and recommended next actions.</p>
+
+        <div class='hero-actions small-actions'>
+            <a class='mini-btn' href='{% url "ai_summary_centre" %}'>
+                Open AI Summary
+            </a>
+        </div>
+    </div>
+
+</section>
+
+<section class='panel'>
+    <div class='panel-header'>
+        <h3>Recent Client Folders</h3>
+        <p>{{ recent_folders|length }} shown</p>
+    </div>
+
+    {% if recent_folders %}
+        <div class='table-wrap'>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Client</th>
+                        <th>Owner</th>
+                        <th>Email</th>
+                        <th>Created</th>
+                        <th>Open</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for folder in recent_folders %}
+                        <tr>
+                            <td>{{ folder.client_name }}</td>
+
+                            <td>
+                                {% if folder.owner %}
+                                    {{ folder.owner.username }}
+                                {% else %}
+                                    Unassigned
+                                {% endif %}
+                            </td>
+
+                            <td>{{ folder.client_email|default:'No email' }}</td>
+                            <td>{{ folder.created_at|date:'d M Y H:i' }}</td>
+
+                            <td>
+                                <a class='mini-btn' href='{% url "client_profile" folder.id %}'>
+                                    Open Profile
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class='empty-state'>
+            <h3>No folders yet</h3>
+            <p>Create a client folder to begin.</p>
+        </div>
+    {% endif %}
+</section>
+
+<section class='panel'>
+    <div class='panel-header'>
+        <h3>Recent Activity</h3>
+        <p>Latest platform actions</p>
+    </div>
+
+    {% if recent_activity %}
+        <div class='timeline'>
+            {% for item in recent_activity %}
+                <div class='timeline-item'>
+                    <div class='timeline-dot'></div>
+
+                    <div>
+                        <h4>{{ item.title }}</h4>
+                        <p>{{ item.get_action_display }} - {{ item.created_at|date:'d M Y H:i' }}</p>
+
+                        {% if item.description %}
+                            <p>{{ item.description }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class='empty-state'>
+            <h3>No activity yet</h3>
+            <p>Activity will appear here once the system is used.</p>
+        </div>
+    {% endif %}
+</section>
+
+{% endblock %}

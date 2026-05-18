@@ -1,0 +1,110 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+
+<section class='page-header'>
+    <p class='eyebrow'>Document Automation</p>
+    <h2>Documents</h2>
+    <p>Search, filter, open, and manage generated business documents.</p>
+
+    {% if can_generate_document %}
+        <div class='hero-actions'>
+            <a class='btn primary' href='{% url "generate_document" %}'>
+                Generate New Document
+            </a>
+        </div>
+    {% endif %}
+</section>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class='alert'>{{ message }}</div>
+    {% endfor %}
+{% endif %}
+
+<section class='panel'>
+    <div class='panel-header'>
+        <h3>Find Documents</h3>
+        <p>Search and filter generated documents</p>
+    </div>
+
+    <form method='get' class='document-filter-form'>
+        <input class='form-control' type='text' name='q' value='{{ search_query }}' placeholder='Search by title, client, or email...'>
+
+        <select class='form-control' name='type'>
+            <option value=''>All document types</option>
+            {% for value, label in document_types %}
+                <option value='{{ value }}' {% if document_type == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+
+        <select class='form-control' name='sort'>
+            <option value='newest' {% if sort_by == 'newest' %}selected{% endif %}>Newest first</option>
+            <option value='oldest' {% if sort_by == 'oldest' %}selected{% endif %}>Oldest first</option>
+            <option value='amount_high' {% if sort_by == 'amount_high' %}selected{% endif %}>Amount high to low</option>
+            <option value='amount_low' {% if sort_by == 'amount_low' %}selected{% endif %}>Amount low to high</option>
+        </select>
+
+        <button class='btn primary' type='submit'>Search Documents</button>
+        <a class='btn secondary' href='{% url "document_list" %}'>Reset</a>
+    </form>
+</section>
+
+<section class='panel'>
+    <div class='panel-header'>
+        <h3>Generated Documents</h3>
+        <p>{{ documents.count }} document(s)</p>
+    </div>
+
+    {% if documents %}
+        <div class='table-wrap'>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Client</th>
+                        <th>Type</th>
+                        <th>Amount</th>
+                        <th>Generated</th>
+                        <th>PDF</th>
+                        {% if can_delete_document %}
+                            <th>Delete</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for document in documents %}
+                    <tr>
+                        <td>{{ document.title }}</td>
+                        <td>{{ document.client_name }}</td>
+                        <td><span class='badge'>{{ document.get_document_type_display }}</span></td>
+                        <td>R {{ document.amount }}</td>
+                        <td>{{ document.created_at|date:'d M Y H:i' }}</td>
+                        <td>
+                            {% if document.file_path %}
+                                <a class='mini-btn' href='{% url "download_document" document.id %}' target='_blank'>Open PDF</a>
+                            {% else %}
+                                <span class='muted'>No file</span>
+                            {% endif %}
+                        </td>
+
+                        {% if can_delete_document %}
+                            <td>
+                                <a class='mini-btn danger' href='{% url "confirm_delete_document" document.id %}'>Delete</a>
+                            </td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class='empty-state'>
+            <h3>No documents found</h3>
+            <p>Try a different search, change your filters, or generate a new document.</p>
+        </div>
+    {% endif %}
+</section>
+
+{% endblock %}

@@ -1,0 +1,186 @@
+﻿{% load static %}
+
+<!DOCTYPE html>
+<html lang='en'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <title>That Corporate Flow</title>
+
+    <link rel='stylesheet' href='{% static "css/style.css" %}'>
+    <link rel='stylesheet' href='{% static "css/public.css" %}'>
+    <link rel='stylesheet' href='{% static "css/final_cleanup.css" %}'>
+    <link rel='stylesheet' href='{% static "css/ui_polish.css" %}'>
+    <link rel='stylesheet' href='{% static "css/landing_polish.css" %}'>
+    <link rel='stylesheet' href='{% static "css/enterprise_ui.css" %}'>
+</head>
+
+<body class='{% block body_class %}{% endblock %}'>
+
+{% block app_layout %}
+
+<div class='app-shell'>
+
+    {% block sidebar %}
+
+        {% if user.is_authenticated %}
+
+            <aside class='sidebar'>
+
+                <div class='sidebar-top'>
+                    <a class='brand' href='{% if user.role == "client" %}{% url "client_portal" %}{% else %}{% url "command_centre" %}{% endif %}'>
+                        <span class='brand-dot'></span>
+
+                        <div>
+                            <strong>That Corporate Flow</strong>
+                            <small>
+                                {% if user.role == "client" %}
+                                    Client Workspace
+                                {% else %}
+                                    Operational Workspace
+                                {% endif %}
+                            </small>
+                        </div>
+                    </a>
+                </div>
+
+                <nav class='sidebar-nav'>
+
+                    {% if user.role == "client" %}
+
+                        <details class='nav-group' open>
+                            <summary>Client</summary>
+                            <a href='{% url "client_portal" %}'>Client Portal</a>
+                            <a href='{% url "request_list" %}'>My Requests</a>
+                            <a href='{% url "create_request" %}'>Submit Request</a>
+                            <a href='{% url "client_folder_list" %}'>My Folders</a>
+                        </details>
+
+                        <details class='nav-group'>
+                            <summary>Account</summary>
+                            <a href='{% url "account_settings" %}'>Settings</a>
+                            <a href='{% url "notification_list" %}'>
+                                Notifications
+                                {% if unread_notification_count > 0 %}
+                                    <span class='nav-badge'>{{ unread_notification_count }}</span>
+                                {% endif %}
+                            </a>
+                            <a href='{% url "logout" %}'>Logout</a>
+                        </details>
+
+                    {% else %}
+
+                        <details class='nav-group' open>
+                            <summary>Overview</summary>
+                            <a href='{% url "command_centre" %}'>Command Centre</a>
+                            <a href='{% url "home" %}'>Dashboard</a>
+                            <a href='{% url "activity_feed" %}'>Activity Feed</a>
+                        </details>
+
+                        <details class='nav-group'>
+                            <summary>Operations</summary>
+                            <a href='{% url "request_list" %}'>Requests</a>
+                            <a href='{% url "task_board" %}'>Tasks</a>
+
+                            {% if user.role == 'admin' or user.role == 'operations' or user.is_staff %}
+                                <a href='{% url "workflow_list" %}'>Workflows</a>
+                            {% endif %}
+                        </details>
+
+                        <details class='nav-group'>
+                            <summary>Clients</summary>
+                            <a href='{% url "client_portal" %}'>Client Portal</a>
+                            <a href='{% url "client_folder_list" %}'>Client Folders</a>
+
+                            {% if user.role == 'admin' or user.role == 'operations' or user.is_staff %}
+                                <a href='{% url "public_enquiry_list" %}'>Public Enquiries</a>
+                            {% endif %}
+                        </details>
+
+                        <details class='nav-group'>
+                            <summary>Insights</summary>
+
+                            {% if user.role == 'admin' or user.role == 'operations' or user.role == 'finance' or user.is_staff %}
+                                <a href='{% url "request_analytics_dashboard" %}'>Analytics</a>
+                            {% endif %}
+
+                            <a href='{% url "ai_operations_assistant" %}'>AI Assistant</a>
+                            <a href='{% url "global_search" %}'>Global Search</a>
+                        </details>
+
+                        <details class='nav-group'>
+                            <summary>System</summary>
+
+                            <a href='{% url "account_settings" %}'>Settings</a>
+
+                            <a href='{% url "notification_list" %}'>
+                                Notifications
+                                {% if unread_notification_count > 0 %}
+                                    <span class='nav-badge'>{{ unread_notification_count }}</span>
+                                {% endif %}
+                            </a>
+
+                            {% if user.is_staff %}
+                                <a href='/admin/'>Admin</a>
+                            {% endif %}
+
+                            <a href='{% url "logout" %}'>Logout</a>
+                        </details>
+
+                    {% endif %}
+
+                </nav>
+
+            </aside>
+
+        {% endif %}
+
+    {% endblock %}
+
+    <main class='main-shell'>
+
+        {% block topbar %}
+
+            {% if user.is_authenticated %}
+
+                <header class='topbar-minimal'>
+                    <div>
+                        <h1>{% block page_title %}Workspace{% endblock %}</h1>
+                    </div>
+
+                    <div class='topbar-actions'>
+                        {% if user.role != "client" %}
+                            <a class='topbar-icon' href='{% url "global_search" %}'>⌕</a>
+                        {% endif %}
+
+                        <a class='topbar-icon' href='{% url "notification_list" %}'>
+                            🔔
+                            {% if unread_notification_count > 0 %}
+                                <span>{{ unread_notification_count }}</span>
+                            {% endif %}
+                        </a>
+                    </div>
+                </header>
+
+            {% endif %}
+
+        {% endblock %}
+
+        <div class='page-shell'>
+            {% block content %}{% endblock %}
+        </div>
+
+    </main>
+
+</div>
+
+{% endblock %}
+
+</body>
+</html>
+
+
+
+
+

@@ -1,0 +1,143 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+
+<section class='page-header'>
+    <p class='eyebrow'>AI Operations Intelligence</p>
+
+    <h2>{{ summary_title }}</h2>
+
+    <p>
+        AI-generated operational analysis based on requests, workflows,
+        responses, documents, analytics, and platform activity.
+    </p>
+
+    <div class='hero-actions'>
+        <a class='btn secondary' href='{% url "exports_home" %}'>
+            Back to Export Centre
+        </a>
+
+        <a class='btn primary' href='?type={{ summary_type }}'>
+            Refresh Summary
+        </a>
+    </div>
+</section>
+
+<section class='panel ai-summary-panel'>
+
+    <div class='panel-header'>
+        <h3>AI Summary Output</h3>
+
+        <p>
+            Generated on {{ generated_at|date:'d M Y H:i' }}
+        </p>
+    </div>
+
+    <div class='ai-summary-content'>
+        {{ summary|linebreaks }}
+    </div>
+
+</section>
+
+<section class='panel'>
+
+    <div class='panel-header'>
+        <h3>Recommended Operational Actions</h3>
+
+        <p>
+            Direct actions based on the AI-generated summary.
+        </p>
+    </div>
+
+    <div class='ai-action-grid'>
+
+        {% if summary_type == 'workflows' %}
+
+            <a class='ai-action-card' href='{% url "workflow_list" %}'>
+                <h4>Open Workflows</h4>
+                <p>Review workflow activity, automation runs, and recent logs.</p>
+            </a>
+
+            <a class='ai-action-card' href='{% url "workflow_logs_dashboard" %}'>
+                <h4>Open Workflow Logs</h4>
+                <p>Inspect failures, errors, denied actions, and missing events.</p>
+            </a>
+
+            <a class='ai-action-card' href='{% url "task_dashboard" %}'>
+                <h4>Open Operations Tasks</h4>
+                <p>Create follow-up operational tasks based on workflow issues.</p>
+            </a>
+
+            <a class='ai-action-card' href='{% url "request_analytics_dashboard" %}'>
+                <h4>Open Analytics</h4>
+                <p>Compare workflow performance with operational request activity.</p>
+            </a>
+
+        {% elif summary_type == 'analytics' %}
+
+            <a class='ai-action-card' href='{% url "request_analytics_dashboard" %}'>
+                <h4>Open Analytics Dashboard</h4>
+                <p>Review platform metrics, downloads, response activity, and trends.</p>
+            </a>
+
+            <a class='ai-action-card' href='{% url "request_list" %}?status=pending'>
+                <h4>View Pending Requests</h4>
+                <p>Review requests that still require operational attention.</p>
+            </a>
+
+            <a class='ai-action-card' href='{% url "request_list" %}?status=under_review'>
+                <h4>View Under Review Requests</h4>
+                <p>Continue reviews and move requests toward completion.</p>
+            </a>
+
+            <a class='ai-action-card' href='{% url "task_board" %}'>
+                <h4>Open Operations Board</h4>
+                <p>Convert operational bottlenecks into trackable workflow tasks.</p>
+            </a>
+
+            <a class='ai-action-card' href='{% url "public_enquiry_list" %}'>
+                <h4>Review Public Enquiries</h4>
+                <p>Check whether unresolved enquiries need conversion into requests.</p>
+            </a>
+
+        {% elif summary_type == 'documents' %}
+
+            <a class='ai-action-card' href='{% url "document_list" %}'>
+                <h4>Open Documents</h4>
+                <p>Review uploaded client files, linked records, and missing documents.</p>
+            </a>
+
+            <a class='ai-action-card' href='{% url "client_folder_list" %}'>
+                <h4>Open Client Folders</h4>
+                <p>Review client document structures and linked requests.</p>
+            </a>
+
+            <a class='ai-action-card' href='{% url "request_list" %}'>
+                <h4>Open Requests</h4>
+                <p>Check which requests still require document fulfilment.</p>
+            </a>
+
+        {% else %}
+
+            <a class='ai-action-card' href='{% url "home" %}'>
+                <h4>Open Dashboard</h4>
+                <p>Return to the main operational dashboard.</p>
+            </a>
+
+            <a class='ai-action-card' href='{% url "task_dashboard" %}'>
+                <h4>Open Operations Tasks</h4>
+                <p>Review active operational workload.</p>
+            </a>
+
+            <a class='ai-action-card' href='{% url "request_analytics_dashboard" %}'>
+                <h4>Open Analytics</h4>
+                <p>Review business performance insights.</p>
+            </a>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+{% endblock %}

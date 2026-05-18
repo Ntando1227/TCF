@@ -1,0 +1,76 @@
+﻿{% extends 'base.html' %}
+
+{% block body_class %}public-layout public-site{% endblock %}
+{% block sidebar %}{% endblock %}
+
+{% block content %}
+
+<section class='public-page'>
+
+    <nav class='public-topnav'>
+        <a class='public-logo' href='{% url "landing_page" %}'>
+            <span>TCF</span>
+            That Corporate Flow
+        </a>
+
+        <div>
+            <a href='{% url "landing_page" %}'>Home</a>
+            <a href='{% url "public_enquiry_form" %}'>Submit Enquiry</a>
+            <a class='public-nav-cta' href='{% url "login" %}'>Client Login</a>
+        </div>
+    </nav>
+
+    <section class='client-final-hero'>
+        <div>
+            <p class='public-pill'>Client Workspace</p>
+
+            <h1>A calmer way to manage client delivery.</h1>
+
+            <p>
+                Submit requests, receive responses, access documents,
+                preview files, open links, and confirm completion in one
+                organised client workspace.
+            </p>
+
+            <div class='public-actions'>
+                {% if user.is_authenticated %}
+                    <a class='public-btn primary' href='{% url "client_portal" %}'>Open Client Portal</a>
+                    <a class='public-btn secondary' href='{% url "create_request" %}'>Submit Request</a>
+                {% else %}
+                    <a class='public-btn primary' href='{% url "login" %}'>Client Login</a>
+                    <a class='public-btn secondary' href='{% url "public_enquiry_form" %}'>Submit Enquiry</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class='client-flow-card'>
+            <p class='mini-label'>Client Flow</p>
+
+            <div class='client-flow-clean'>
+                <div><span>01</span><strong>Submit</strong><p>Send a request or enquiry.</p></div>
+                <div><span>02</span><strong>Review</strong><p>The team reviews and assigns it.</p></div>
+                <div><span>03</span><strong>Deliver</strong><p>Receive files, links, and responses.</p></div>
+                <div><span>04</span><strong>Confirm</strong><p>Accept delivery or request changes.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section class='client-benefit-section'>
+        <div>
+            <h2>Clearer communication. Cleaner delivery.</h2>
+            <p>
+                Your requests, responses, documents, downloads,
+                and confirmations stay connected to your client profile.
+            </p>
+        </div>
+
+        <div class='client-benefit-grid'>
+            <div><h3>Track requests</h3><p>Know what was submitted and where it stands.</p></div>
+            <div><h3>Receive documents</h3><p>Access attachments, fulfilment files, and external links.</p></div>
+            <div><h3>Confirm outcomes</h3><p>Accept completed work or request changes.</p></div>
+        </div>
+    </section>
+
+</section>
+
+{% endblock %}

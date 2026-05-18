@@ -1,0 +1,80 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+
+<section class='page-header'>
+    <p class='eyebrow'>Analytics & Exports</p>
+
+    <h2>Operations Centre</h2>
+
+    <p>
+        View request analytics and export operational records.
+    </p>
+
+    <div class='hero-actions'>
+        <a class='btn primary' href='{% url "request_analytics_dashboard" %}'>
+            Request Analytics
+        </a>
+    </div>
+</section>
+
+<section class='module-grid'>
+
+    <div class='module-card'>
+        <h4>Request Analytics Dashboard</h4>
+        <p>View request volume, completion rate, response activity, downloads, and staff/client metrics.</p>
+
+        <div class='hero-actions small-actions'>
+            <a class='mini-btn' href='{% url "request_analytics_dashboard" %}'>
+                Open Analytics
+            </a>
+        </div>
+    </div>
+
+    <div class='module-card'>
+        <h4>Client Folders Export</h4>
+        <p>Download client folder records as CSV.</p>
+
+        <div class='hero-actions small-actions'>
+            <a class='mini-btn' href='{% url "export_client_folders" %}'>
+                Download CSV
+            </a>
+        </div>
+    </div>
+
+    <div class='module-card'>
+        <h4>Client Files Export</h4>
+        <p>Download client file records as CSV.</p>
+
+        <div class='hero-actions small-actions'>
+            <a class='mini-btn' href='{% url "export_client_files" %}'>
+                Download CSV
+            </a>
+        </div>
+    </div>
+
+    <div class='module-card'>
+        <h4>Documents Export</h4>
+        <p>Download generated document records as CSV.</p>
+
+        <div class='hero-actions small-actions'>
+            <a class='mini-btn' href='{% url "export_documents" %}'>
+                Download CSV
+            </a>
+        </div>
+    </div>
+
+    <div class='module-card'>
+        <h4>Workflow Logs Export</h4>
+        <p>Download workflow log records as CSV.</p>
+
+        <div class='hero-actions small-actions'>
+            <a class='mini-btn' href='{% url "export_workflow_logs" %}'>
+                Download CSV
+            </a>
+        </div>
+    </div>
+
+</section>
+
+{% endblock %}

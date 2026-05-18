@@ -1,0 +1,91 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+
+<section class='page-header'>
+    <p class='eyebrow'>AI Operational Assistant</p>
+
+    <h2>Ask your operations system what needs attention.</h2>
+
+    <p>
+        Ask about overdue work, blocked tasks, pending confirmations,
+        workflow issues, public enquiries, client activity, and request status.
+    </p>
+
+    <div class='hero-actions'>
+        <a class='btn secondary' href='{% url "operational_health_dashboard" %}'>
+            Health Dashboard
+        </a>
+
+        <a class='btn secondary' href='{% url "activity_feed" %}'>
+            Activity Feed
+        </a>
+    </div>
+</section>
+
+<section class='assistant-shell'>
+
+    <div class='assistant-main'>
+
+        <form method='get' class='assistant-search-form'>
+            <input
+                class='assistant-input'
+                type='text'
+                name='q'
+                value='{{ question }}'
+                placeholder='Ask: What needs attention today?'
+            >
+
+            <button class='btn primary' type='submit'>
+                Ask Assistant
+            </button>
+        </form>
+
+        <div class='assistant-answer-card'>
+            <p class='eyebrow'>Assistant Response</p>
+
+            <h3>{{ answer_title }}</h3>
+
+            <div class='assistant-answer-lines'>
+                {% for line in answer_lines %}
+                    <p>{{ line }}</p>
+                {% endfor %}
+            </div>
+        </div>
+
+        <section class='panel'>
+            <div class='panel-header'>
+                <h3>Recommended Actions</h3>
+                <p>Open the right workspace based on the answer.</p>
+            </div>
+
+            <div class='ai-action-grid'>
+                {% for card in action_cards %}
+                    <a class='ai-action-card' href='{{ card.url }}'>
+                        <h4>{{ card.title }}</h4>
+                        <p>{{ card.description }}</p>
+                    </a>
+                {% endfor %}
+            </div>
+        </section>
+
+    </div>
+
+    <aside class='assistant-side panel'>
+        <div class='panel-header'>
+            <h3>Try Asking</h3>
+            <p>Useful operational questions</p>
+        </div>
+
+        <div class='suggested-question-list'>
+            {% for item in suggested_questions %}
+                <a href='{% url "ai_operations_assistant" %}?q={{ item|urlencode }}'>
+                    {{ item }}
+                </a>
+            {% endfor %}
+        </div>
+    </aside>
+
+</section>
+
+{% endblock %}

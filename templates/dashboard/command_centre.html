@@ -1,0 +1,160 @@
+﻿{% extends 'base.html' %}
+
+{% block page_title %}
+Command Centre
+{% endblock %}
+
+{% block content %}
+
+<section class='focus-hero {{ pulse_class }}'>
+
+    <div class='focus-copy'>
+
+        <p class='eyebrow'>Operational Status</p>
+
+        <h2>{{ pulse_status }}</h2>
+
+        <p>
+            {{ pulse_message }}
+        </p>
+
+        <div class='focus-actions'>
+            <a class='btn primary' href='{% url "operational_health_dashboard" %}'>
+                Open Health Dashboard
+            </a>
+
+            <a class='btn secondary' href='{% url "activity_feed" %}'>
+                Activity Feed
+            </a>
+        </div>
+
+    </div>
+
+    <div class='focus-score'>
+        <span>{{ risk_score }}</span>
+        <small>Risk Score</small>
+    </div>
+
+</section>
+
+<section class='focus-kpi-grid'>
+
+    <div class='focus-kpi-card'>
+        <p>Requests</p>
+        <h3>{{ stats.open_requests }}</h3>
+        <span>{{ stats.completion_rate }}% completed</span>
+    </div>
+
+    <div class='focus-kpi-card'>
+        <p>Tasks</p>
+        <h3>{{ stats.overdue_tasks }}</h3>
+        <span>Overdue tasks</span>
+    </div>
+
+    <div class='focus-kpi-card'>
+        <p>Responses</p>
+        <h3>{{ stats.pending_confirmations }}</h3>
+        <span>Pending confirmations</span>
+    </div>
+
+</section>
+
+<section class='focus-layout'>
+
+    <div class='focus-panel'>
+
+        <div class='panel-header'>
+            <h3>Priority Actions</h3>
+            <p>What needs attention today</p>
+        </div>
+
+        <div class='focus-action-list'>
+
+            {% if stats.overdue_tasks > 0 %}
+                <a href='{% url "task_board" %}'>
+                    <strong>{{ stats.overdue_tasks }} overdue task(s)</strong>
+                    <span>Review and reassign delayed work.</span>
+                </a>
+            {% endif %}
+
+            {% if stats.overdue_requests > 0 %}
+                <a href='{% url "request_list" %}'>
+                    <strong>{{ stats.overdue_requests }} overdue request(s)</strong>
+                    <span>Follow up on delayed requests.</span>
+                </a>
+            {% endif %}
+
+            {% if stats.pending_confirmations > 0 %}
+                <a href='{% url "request_analytics_dashboard" %}'>
+                    <strong>{{ stats.pending_confirmations }} pending confirmations</strong>
+                    <span>Clients still need to confirm delivery.</span>
+                </a>
+            {% endif %}
+
+            {% if stats.workflow_errors > 0 %}
+                <a href='{% url "workflow_list" %}'>
+                    <strong>{{ stats.workflow_errors }} workflow issue(s)</strong>
+                    <span>Review automation logs and failures.</span>
+                </a>
+            {% endif %}
+
+            {% if stats.enquiries > 0 %}
+                <a href='{% url "public_enquiry_list" %}'>
+                    <strong>{{ stats.enquiries }} new public enquiries</strong>
+                    <span>Review incoming external requests.</span>
+                </a>
+            {% endif %}
+
+            {% if stats.overdue_tasks == 0 and stats.overdue_requests == 0 and stats.pending_confirmations == 0 and stats.workflow_errors == 0 %}
+                <div class='focus-empty'>
+                    <h4>Operations look stable.</h4>
+                    <p>No urgent operational signals detected.</p>
+                </div>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    <div class='focus-panel'>
+
+        <div class='panel-header'>
+            <h3>Recent Activity</h3>
+            <p>Latest operational movement</p>
+        </div>
+
+        <div class='focus-activity-list'>
+
+            {% for item in latest_requests %}
+
+                <a href='{% url "request_detail" item.id %}'>
+
+                    <div>
+                        <strong>{{ item.title }}</strong>
+
+                        <p>
+                            {{ item.get_status_display }}
+                        </p>
+                    </div>
+
+                    <small>
+                        {{ item.created_at|date:'d M H:i' }}
+                    </small>
+
+                </a>
+
+            {% empty %}
+
+                <div class='focus-empty'>
+                    <h4>No recent activity</h4>
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

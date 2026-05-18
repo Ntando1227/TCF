@@ -1,0 +1,96 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+
+<section class='page-header'>
+    <p class='eyebrow'>External Client Intake</p>
+
+    <h2>Public Enquiries</h2>
+
+    <p>Review, manage, close, or convert public enquiries into service requests.</p>
+</section>
+
+<section class='stats-grid'>
+    <div class='stat-card'>
+        <span>{{ stats.new }}</span>
+        <p>New</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ stats.reviewed }}</span>
+        <p>Reviewed</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ stats.converted }}</span>
+        <p>Converted</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ stats.closed }}</span>
+        <p>Closed</p>
+    </div>
+</section>
+
+<section class='panel'>
+    <form method='get' class='document-filter-form'>
+        <input class='form-control' type='text' name='q' value='{{ search_query }}' placeholder='Search enquiry title...'>
+
+        <select class='form-control' name='status'>
+            <option value='all' {% if status_filter == 'all' %}selected{% endif %}>All statuses</option>
+
+            {% for value, label in status_choices %}
+                <option value='{{ value }}' {% if status_filter == value %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+
+        <button class='btn primary' type='submit'>Search</button>
+
+        <a class='btn secondary' href='{% url "public_enquiry_list" %}'>Reset</a>
+    </form>
+</section>
+
+<section class='panel'>
+    <div class='panel-header'>
+        <h3>Enquiry Queue</h3>
+        <p>{{ enquiries.count }} enquiry/enquiries</p>
+    </div>
+
+    <div class='table-wrap'>
+        <table>
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Name</th>
+                    <th>Company</th>
+                    <th>Priority</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Open</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for enquiry in enquiries %}
+                    <tr>
+                        <td>{{ enquiry.title }}</td>
+                        <td>{{ enquiry.full_name }}</td>
+                        <td>{{ enquiry.company_name|default:'None' }}</td>
+                        <td><span class='badge'>{{ enquiry.get_priority_display }}</span></td>
+                        <td><span class='badge'>{{ enquiry.get_status_display }}</span></td>
+                        <td>{{ enquiry.created_at|date:'d M Y H:i' }}</td>
+                        <td>
+                            <a class='mini-btn' href='{% url "public_enquiry_detail" enquiry.id %}'>Open</a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan='7'>No public enquiries found.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+{% endblock %}

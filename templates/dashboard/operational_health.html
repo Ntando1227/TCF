@@ -1,0 +1,165 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+
+<section class='page-header'>
+    <p class='eyebrow'>Smart Operations</p>
+
+    <h2>Operational Health Dashboard</h2>
+
+    <p>
+        A clear view of system health, operational risk, overdue work,
+        pending confirmations, workflow issues, and recommended next actions.
+    </p>
+
+    <div class='hero-actions'>
+        <a class='btn primary' href='{% url "activity_feed" %}'>Activity Feed</a>
+        <a class='btn secondary' href='{% url "task_board" %}'>Operations Board</a>
+        <a class='btn secondary' href='{% url "request_analytics_dashboard" %}'>Analytics</a>
+    </div>
+</section>
+
+<section class='health-hero {{ health_class }}'>
+    <div>
+        <p class='eyebrow'>System Health</p>
+        <h1>{{ health_status }}</h1>
+        <p>{{ health_message }}</p>
+    </div>
+
+    <div class='health-score-card'>
+        <span>{{ risk_score }}</span>
+        <p>Risk Score</p>
+    </div>
+</section>
+
+<section class='stats-grid'>
+    <div class='stat-card'>
+        <span>{{ completion_rate }}%</span>
+        <p>Request Completion</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ confirmation_rate }}%</span>
+        <p>Response Confirmation</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ stats.overdue_tasks }}</span>
+        <p>Overdue Tasks</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ stats.overdue_requests }}</span>
+        <p>Overdue Requests</p>
+    </div>
+</section>
+
+<section class='analytics-grid'>
+
+    <div class='panel'>
+        <div class='panel-header'>
+            <h3>Request Health</h3>
+            <p>Client request movement</p>
+        </div>
+
+        <div class='metric-list'>
+            <div class='metric-row'><span>Total Requests</span><strong>{{ stats.total_requests }}</strong></div>
+            <div class='metric-row'><span>Completed</span><strong>{{ stats.completed_requests }}</strong></div>
+            <div class='metric-row'><span>Pending</span><strong>{{ stats.pending_requests }}</strong></div>
+            <div class='metric-row'><span>Under Review</span><strong>{{ stats.under_review_requests }}</strong></div>
+            <div class='metric-row'><span>Overdue</span><strong>{{ stats.overdue_requests }}</strong></div>
+        </div>
+    </div>
+
+    <div class='panel'>
+        <div class='panel-header'>
+            <h3>Task Health</h3>
+            <p>Internal workload pressure</p>
+        </div>
+
+        <div class='metric-list'>
+            <div class='metric-row'><span>Total Tasks</span><strong>{{ stats.total_tasks }}</strong></div>
+            <div class='metric-row'><span>Overdue Tasks</span><strong>{{ stats.overdue_tasks }}</strong></div>
+            <div class='metric-row'><span>Blocked Tasks</span><strong>{{ stats.blocked_tasks }}</strong></div>
+            <div class='metric-row'><span>New Public Enquiries</span><strong>{{ stats.open_enquiries }}</strong></div>
+        </div>
+    </div>
+
+</section>
+
+<section class='analytics-grid'>
+
+    <div class='panel'>
+        <div class='panel-header'>
+            <h3>Delivery Health</h3>
+            <p>Response and confirmation movement</p>
+        </div>
+
+        <div class='metric-list'>
+            <div class='metric-row'><span>Total Responses</span><strong>{{ stats.total_responses }}</strong></div>
+            <div class='metric-row'><span>Accepted Responses</span><strong>{{ stats.accepted_responses }}</strong></div>
+            <div class='metric-row'><span>Changes Requested</span><strong>{{ stats.changes_requested }}</strong></div>
+            <div class='metric-row'><span>Pending Confirmations</span><strong>{{ stats.pending_confirmations }}</strong></div>
+        </div>
+    </div>
+
+    <div class='panel'>
+        <div class='panel-header'>
+            <h3>Workflow Health</h3>
+            <p>Automation reliability signals</p>
+        </div>
+
+        <div class='metric-list'>
+            <div class='metric-row'><span>Workflow Errors</span><strong>{{ stats.workflow_errors }}</strong></div>
+            <div class='metric-row'><span>Backup Logs</span><strong>{{ stats.backup_logs }}</strong></div>
+        </div>
+    </div>
+
+</section>
+
+<section class='panel'>
+    <div class='panel-header'>
+        <h3>Recommended Next Actions</h3>
+        <p>Priority actions based on current operational signals</p>
+    </div>
+
+    <div class='health-actions-list'>
+        {% for action in recommended_actions %}
+            <div class='health-action-item'>
+                <span>{{ forloop.counter }}</span>
+                <p>{{ action }}</p>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class='panel'>
+    <div class='panel-header'>
+        <h3>Quick Actions</h3>
+        <p>Jump directly to the area that needs attention</p>
+    </div>
+
+    <div class='ai-action-grid'>
+        <a class='ai-action-card' href='{% url "task_board" %}'>
+            <h4>Open Operations Board</h4>
+            <p>Review overdue, blocked, and in-progress tasks.</p>
+        </a>
+
+        <a class='ai-action-card' href='{% url "request_list" %}'>
+            <h4>Open Requests</h4>
+            <p>Review submitted, pending, and under-review client requests.</p>
+        </a>
+
+        <a class='ai-action-card' href='{% url "public_enquiry_list" %}'>
+            <h4>Open Public Enquiries</h4>
+            <p>Review new external enquiries waiting for action.</p>
+        </a>
+
+        <a class='ai-action-card' href='{% url "workflow_list" %}'>
+            <h4>Open Workflows</h4>
+            <p>Review automation logs and backup workflow activity.</p>
+        </a>
+    </div>
+</section>
+
+{% endblock %}

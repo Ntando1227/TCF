@@ -1,0 +1,64 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+
+<section class='page-header'>
+    <p class='eyebrow'>AI Operations Assistant</p>
+
+    <h2>AI Summary Centre</h2>
+
+    <p>
+        Generate quick operational summaries for requests, documents,
+        files, workflows, and analytics.
+    </p>
+</section>
+
+<section class='module-grid'>
+
+    <div class='module-card'>
+        <h4>Request Analytics Summary</h4>
+        <p>Summarise request volume, completion, responses, downloads, and bottlenecks.</p>
+
+        <div class='hero-actions small-actions'>
+            <a class='mini-btn' href='{% url "generate_ai_summary" %}?type=requests'>
+                Generate Summary
+            </a>
+        </div>
+    </div>
+
+    <div class='module-card'>
+        <h4>Documents Summary</h4>
+        <p>Summarise generated documents, latest documents, and document value.</p>
+
+        <div class='hero-actions small-actions'>
+            <a class='mini-btn' href='{% url "generate_ai_summary" %}?type=documents'>
+                Generate Summary
+            </a>
+        </div>
+    </div>
+
+    <div class='module-card'>
+        <h4>Files Summary</h4>
+        <p>Summarise client files, approvals, archived files, and review workload.</p>
+
+        <div class='hero-actions small-actions'>
+            <a class='mini-btn' href='{% url "generate_ai_summary" %}?type=files'>
+                Generate Summary
+            </a>
+        </div>
+    </div>
+
+    <div class='module-card'>
+        <h4>Workflow Summary</h4>
+        <p>Summarise workflow logs and recent automation activity.</p>
+
+        <div class='hero-actions small-actions'>
+            <a class='mini-btn' href='{% url "generate_ai_summary" %}?type=workflows'>
+                Generate Summary
+            </a>
+        </div>
+    </div>
+
+</section>
+
+{% endblock %}

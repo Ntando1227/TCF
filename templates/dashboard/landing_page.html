@@ -1,0 +1,43 @@
+﻿{% extends 'base.html' %}
+
+{% block body_class %}
+public-layout
+{% endblock %}
+
+{% block sidebar %}
+{% endblock %}
+
+{% block page_title %}
+That Corporate Flow
+{% endblock %}
+
+{% block content %}
+
+<section class='public-hero'>
+
+    <p class='eyebrow'>Operational Workspace</p>
+
+    <h1>
+        Calm operations for modern teams.
+    </h1>
+
+    <p>
+        Manage requests, workflows, client delivery,
+        internal operations, and reporting from one focused platform.
+    </p>
+
+    <div class='hero-actions'>
+
+        <a class='btn primary' href='{% url "login" %}'>
+            Open Workspace
+        </a>
+
+        <a class='btn secondary' href='{% url "public_enquiry_form" %}'>
+            Public Enquiry
+        </a>
+
+    </div>
+
+</section>
+
+{% endblock %}

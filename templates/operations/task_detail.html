@@ -1,0 +1,158 @@
+﻿{% extends 'base.html' %}
+
+{% block page_title %}
+Task Detail
+{% endblock %}
+
+{% block content %}
+
+<section class='detail-shell'>
+
+    <div class='detail-main'>
+
+        <section class='detail-hero-card'>
+            <div>
+                <p class='eyebrow'>Operations Task</p>
+                <h2>{{ task.title }}</h2>
+                <p>{{ task.description }}</p>
+            </div>
+        </section>
+
+        <section class='detail-panel'>
+            <div class='panel-header'>
+                <h3>Task Information</h3>
+                <p>Ownership, priority, client link, and progress.</p>
+            </div>
+
+            <div class='detail-info-grid'>
+                <div>
+                    <span>Status</span>
+                    <strong class='status-pill status-{{ task.status }}'>{{ task.get_status_display }}</strong>
+                </div>
+
+                <div>
+                    <span>Priority</span>
+                    <strong class='priority-pill priority-{{ task.priority }}'>{{ task.get_priority_display }}</strong>
+                </div>
+
+                <div>
+                    <span>Assigned To</span>
+                    <strong>{{ task.assigned_to.username|default:'Unassigned' }}</strong>
+                </div>
+
+                <div>
+                    <span>Created By</span>
+                    <strong>{{ task.created_by.username|default:'System' }}</strong>
+                </div>
+
+                <div>
+                    <span>Created</span>
+                    <strong>{{ task.created_at|date:'d M Y H:i' }}</strong>
+                </div>
+
+                {% if task.due_date %}
+                    <div>
+                        <span>Due Date</span>
+                        <strong>{{ task.due_date|date:'d M Y' }}</strong>
+                    </div>
+                {% endif %}
+
+                {% if task.linked_client %}
+                    <div>
+                        <span>Client</span>
+                        <strong>{{ task.linked_client.client_name }}</strong>
+                    </div>
+                {% endif %}
+
+                {% if task.linked_request %}
+                    <div>
+                        <span>Linked Request</span>
+                        <strong>{{ task.linked_request.title }}</strong>
+                    </div>
+                {% endif %}
+            </div>
+        </section>
+
+        <section class='detail-panel'>
+            <div class='panel-header'>
+                <h3>Comments</h3>
+                <p>Team discussion and task notes.</p>
+            </div>
+
+            <div class='detail-list'>
+                {% for comment in comments %}
+                    <div class='detail-list-item'>
+                        <div>
+                            <strong>{{ comment.author.username }}</strong>
+                            <p>{{ comment.comment }}</p>
+
+                            <div class='detail-meta-row'>
+                                <span>{{ comment.created_at|date:'d M Y H:i' }}</span>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class='clean-empty-state'>
+                        <div class='empty-icon'>✎</div>
+                        <h3>No comments yet</h3>
+                        <p>Task notes and team comments will appear here.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+
+    </div>
+
+    <aside class='detail-side'>
+
+        <section class='detail-panel sticky-detail-panel'>
+            <div class='panel-header'>
+                <h3>Actions</h3>
+                <p>Manage task progress.</p>
+            </div>
+
+            <div class='detail-action-stack'>
+                <a class='btn primary' href='{% url "resolve_task" task.id %}'>
+                    Resolve Task
+                </a>
+
+                <a class='btn secondary' href='{% url "task_board" %}'>
+                    Back to Board
+                </a>
+
+                {% if task.linked_request %}
+                    <a class='btn secondary' href='{% url "request_detail" task.linked_request.id %}'>
+                        Open Linked Request
+                    </a>
+                {% endif %}
+            </div>
+        </section>
+
+        <section class='detail-panel'>
+            <div class='panel-header'>
+                <h3>Status Summary</h3>
+            </div>
+
+            <div class='side-summary-list'>
+                <div>
+                    <span>Status</span>
+                    <strong>{{ task.get_status_display }}</strong>
+                </div>
+
+                <div>
+                    <span>Priority</span>
+                    <strong>{{ task.get_priority_display }}</strong>
+                </div>
+
+                <div>
+                    <span>Assignee</span>
+                    <strong>{{ task.assigned_to.username|default:'Unassigned' }}</strong>
+                </div>
+            </div>
+        </section>
+
+    </aside>
+
+</section>
+
+{% endblock %}

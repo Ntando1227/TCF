@@ -1,0 +1,65 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+
+<section class='page-header'>
+    <p class='eyebrow'>Team Communication</p>
+
+    <h2>{{ announcement.title }}</h2>
+
+    <p>
+        {{ announcement.get_priority_display }} announcement posted
+        {% if announcement.created_by %}
+            by {{ announcement.created_by.username }}
+        {% else %}
+            by System
+        {% endif %}
+        on {{ announcement.created_at|date:'d M Y H:i' }}
+    </p>
+
+    <div class='hero-actions'>
+        <a class='btn secondary' href='{% url "announcement_list" %}'>
+            Back to Announcements
+        </a>
+
+        {% if can_manage_tasks %}
+            <a class='btn primary' href='{% url "edit_announcement" announcement.id %}'>
+                Edit Announcement
+            </a>
+
+            <a class='btn secondary' href='{% url "toggle_announcement_active" announcement.id %}'>
+                Toggle Active
+            </a>
+        {% endif %}
+    </div>
+</section>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class='alert'>{{ message }}</div>
+    {% endfor %}
+{% endif %}
+
+<section class='panel announcement-detail-card announcement-{{ announcement.priority }}'>
+    <div class='panel-header'>
+        <h3>Announcement</h3>
+
+        <p>
+            {% if announcement.is_pinned %}
+                Pinned ·
+            {% endif %}
+
+            {% if announcement.is_active %}
+                Active
+            {% else %}
+                Inactive
+            {% endif %}
+        </p>
+    </div>
+
+    <div class='announcement-full-message'>
+        {{ announcement.message|linebreaks }}
+    </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,312 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+
+<section class='page-header'>
+    <p class='eyebrow'>Client Portal</p>
+
+    <h2>{{ folder.client_name }}</h2>
+
+    <p>
+        Owner:
+        {% if folder.owner %}
+            {{ folder.owner.username }}
+        {% else %}
+            Unassigned
+        {% endif %}
+    </p>
+
+    <div class='hero-actions'>
+        {% if can_upload_file %}
+            <a class='btn primary' href='{% url "upload_client_file" folder.id %}'>
+                Upload File
+            </a>
+        {% endif %}
+
+        {% if can_reassign_folder %}
+            <a class='btn secondary' href='{% url "reassign_client_folder" folder.id %}'>
+                Reassign Folder
+            </a>
+        {% endif %}
+
+        <a class='btn primary' href='{% url "client_profile" folder.id %}'>Client Profile</a>
+
+        <a class='btn secondary' href='{% url "client_folder_list" %}'>
+            Back
+        </a>
+    </div>
+</section>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class='alert'>
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+<section class='stats-grid'>
+
+    <div class='stat-card'>
+        <span>{{ files.count }}</span>
+        <p>Visible Active Files</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ archived_files.count }}</span>
+        <p>Visible Archived Files</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ folder.created_at|date:'d M' }}</span>
+        <p>Folder Created</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>TCF</span>
+        <p>Managed Portal</p>
+    </div>
+
+</section>
+
+<section class='panel'>
+
+    <div class='panel-header'>
+        <h3>Find Files</h3>
+        <p>Search and filter folder contents</p>
+    </div>
+
+    <form method='get' class='filter-form'>
+        <input
+            class='form-control'
+            type='text'
+            name='q'
+            value='{{ search_query }}'
+            placeholder='Search file title...'
+        >
+
+        <select class='form-control' name='folder'>
+            <option value=''>All folders</option>
+
+            {% for value, label in subfolder_choices %}
+                <option value='{{ value }}' {% if folder_filter == value %}selected{% endif %}>
+                    {{ label }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <select class='form-control' name='status'>
+            <option value='active' {% if status_filter == 'active' %}selected{% endif %}>
+                Active only
+            </option>
+
+            <option value='archived' {% if status_filter == 'archived' %}selected{% endif %}>
+                Archived only
+            </option>
+
+            <option value='all' {% if status_filter == 'all' %}selected{% endif %}>
+                Active + Archived
+            </option>
+        </select>
+
+        <button class='btn primary' type='submit'>
+            Search Files
+        </button>
+
+        <a class='btn secondary' href='{% url "client_folder_detail" folder.id %}'>
+            Reset
+        </a>
+    </form>
+
+</section>
+
+<section class='panel'>
+
+    <div class='panel-header'>
+        <h3>Active Files</h3>
+        <p>{{ files.count }} file(s)</p>
+    </div>
+
+    {% if files %}
+
+        <div class='table-wrap'>
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Current Folder</th>
+                        <th>Uploaded</th>
+                        <th>Preview</th>
+                        {% if can_download_file %}<th>Download</th>{% endif %}
+                        {% if can_move_file %}<th>Move</th>{% endif %}
+                        {% if can_archive_file %}<th>Archive</th>{% endif %}
+                        {% if can_delete_file %}<th>Delete</th>{% endif %}
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for file in files %}
+
+                    <tr>
+                        <td>{{ file.title }}</td>
+
+                        <td>
+                            <span class='badge'>
+                                {{ file.get_subfolder_display }}
+                            </span>
+                        </td>
+
+                        <td>{{ file.uploaded_at|date:'d M Y H:i' }}</td>
+
+                        <td>
+                            <a class='mini-btn' href='{% url "preview_client_file" file.id %}'>
+                                Preview
+                            </a>
+                        </td>
+
+                        {% if can_download_file %}
+                            <td>
+                                <a class='mini-btn' href='{% url "download_client_file" file.id %}'>
+                                    Download
+                                </a>
+                            </td>
+                        {% endif %}
+
+                        {% if can_move_file %}
+                            <td>
+                                <a class='mini-btn blue' href='{% url "move_client_file" file.id %}'>
+                                    Move
+                                </a>
+                            </td>
+                        {% endif %}
+
+                        {% if can_archive_file %}
+                            <td>
+                                <a class='mini-btn danger' href='{% url "confirm_archive_client_file" file.id %}'>
+                                    Archive
+                                </a>
+                            </td>
+                        {% endif %}
+
+                        {% if can_delete_file %}
+                            <td>
+                                <a class='mini-btn danger' href='{% url "confirm_delete_client_file" file.id %}'>
+                                    Delete
+                                </a>
+                            </td>
+                        {% endif %}
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    {% else %}
+
+        <div class='empty-state'>
+            <h3>No active files found</h3>
+            <p>Upload a file or adjust your search filters.</p>
+        </div>
+
+    {% endif %}
+
+</section>
+
+<section class='panel archived-panel'>
+
+    <div class='panel-header'>
+        <h3>Archived Files</h3>
+        <p>{{ archived_files.count }} file(s)</p>
+    </div>
+
+    {% if archived_files %}
+
+        <div class='table-wrap'>
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Original Folder</th>
+                        <th>Archived</th>
+                        <th>Preview</th>
+                        {% if can_download_file %}<th>Download</th>{% endif %}
+                        {% if can_restore_file %}<th>Restore</th>{% endif %}
+                        {% if can_delete_file %}<th>Delete</th>{% endif %}
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for file in archived_files %}
+
+                    <tr>
+                        <td>{{ file.title }}</td>
+
+                        <td>
+                            <span class='badge'>
+                                {{ file.get_subfolder_display }}
+                            </span>
+                        </td>
+
+                        <td>{{ file.archived_at|date:'d M Y H:i' }}</td>
+
+                        <td>
+                            <a class='mini-btn' href='{% url "preview_client_file" file.id %}'>
+                                Preview
+                            </a>
+                        </td>
+
+                        {% if can_download_file %}
+                            <td>
+                                <a class='mini-btn' href='{% url "download_client_file" file.id %}'>
+                                    Download
+                                </a>
+                            </td>
+                        {% endif %}
+
+                        {% if can_restore_file %}
+                            <td>
+                                <a class='mini-btn blue' href='{% url "confirm_restore_client_file" file.id %}'>
+                                    Restore
+                                </a>
+                            </td>
+                        {% endif %}
+
+                        {% if can_delete_file %}
+                            <td>
+                                <a class='mini-btn danger' href='{% url "confirm_delete_client_file" file.id %}'>
+                                    Delete
+                                </a>
+                            </td>
+                        {% endif %}
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    {% else %}
+
+        <div class='empty-state'>
+            <h3>No archived files found</h3>
+            <p>Archived files will appear here when available.</p>
+        </div>
+
+    {% endif %}
+
+</section>
+
+{% endblock %}

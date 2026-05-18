@@ -1,0 +1,217 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+
+<section class='page-header'>
+    <p class='eyebrow'>Internal Operations</p>
+
+    <h2>Task Dashboard</h2>
+
+    <p>
+        Manage internal staff work, assignments, linked requests, client follow-ups, and deadlines.
+    </p>
+
+    <div class='hero-actions'>
+        {% if can_manage_tasks %}
+            <a class='btn primary' href='{% url "create_task" %}'>
+                Create Task
+            </a>
+        {% endif %}
+
+        <a class='btn secondary' href='{% url "task_board" %}'>Board View</a>
+
+        <a class='btn secondary' href='{% url "request_list" %}'>
+            Requests
+        </a>
+    </div>
+</section>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class='alert'>{{ message }}</div>
+    {% endfor %}
+{% endif %}
+
+<section class='stats-grid'>
+    <div class='stat-card'>
+        <span>{{ stats.total }}</span>
+        <p>Total Tasks</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ stats.todo }}</span>
+        <p>To Do</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ stats.in_progress }}</span>
+        <p>In Progress</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ stats.overdue }}</span>
+        <p>Overdue</p>
+    </div>
+</section>
+
+<section class='stats-grid'>
+    <div class='stat-card'>
+        <span>{{ stats.blocked }}</span>
+        <p>Blocked</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ stats.completed }}</span>
+        <p>Completed</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ status_filter|title }}</span>
+        <p>Status Filter</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ priority_filter|title }}</span>
+        <p>Priority Filter</p>
+    </div>
+</section>
+
+<section class='panel'>
+    <form method='get' class='document-filter-form'>
+        <input
+            class='form-control'
+            type='text'
+            name='q'
+            value='{{ search_query }}'
+            placeholder='Search task title...'
+        >
+
+        <select class='form-control' name='status'>
+            <option value='all' {% if status_filter == 'all' %}selected{% endif %}>
+                All statuses
+            </option>
+
+            {% for value, label in status_choices %}
+                <option value='{{ value }}' {% if status_filter == value %}selected{% endif %}>
+                    {{ label }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <select class='form-control' name='priority'>
+            <option value='all' {% if priority_filter == 'all' %}selected{% endif %}>
+                All priorities
+            </option>
+
+            {% for value, label in priority_choices %}
+                <option value='{{ value }}' {% if priority_filter == value %}selected{% endif %}>
+                    {{ label }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <button class='btn primary' type='submit'>
+            Search Tasks
+        </button>
+
+        <a class='btn secondary' href='{% url "task_dashboard" %}'>
+            Reset
+        </a>
+    </form>
+</section>
+
+<section class='panel'>
+    <div class='panel-header'>
+        <h3>Task Queue</h3>
+        <p>{{ tasks.count }} task(s)</p>
+    </div>
+
+    <div class='table-wrap'>
+        <table>
+            <thead>
+                <tr>
+                    <th>Task</th>
+                    <th>Assigned To</th>
+                    <th>Status</th>
+                    <th>Priority</th>
+                    <th>Due</th>
+                    <th>Linked Request</th>
+                    <th>Linked Client</th>
+                    <th>Open</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for task in tasks %}
+                    <tr>
+                        <td>{{ task.title }}</td>
+
+                        <td>
+                            {% if task.assigned_to %}
+                                {{ task.assigned_to.username }}
+                            {% else %}
+                                <span class='muted'>Unassigned</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <span class='task-status task-status-{{ task.status }}'>
+                                {{ task.get_status_display }}
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class='priority-badge priority-{{ task.priority }}'>
+                                {{ task.get_priority_display }}
+                            </span>
+                        </td>
+
+                        <td>
+                            {% if task.due_date %}
+                                {{ task.due_date|date:'d M Y' }}
+
+                                {% if task.is_overdue %}
+                                    <span class='overdue-pill'>Overdue</span>
+                                {% endif %}
+                            {% else %}
+                                <span class='muted'>No due date</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if task.linked_request %}
+                                <a class='mini-btn' href='{% url "request_detail" task.linked_request.id %}'>
+                                    Request
+                                </a>
+                            {% else %}
+                                <span class='muted'>None</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if task.linked_client %}
+                                <a class='mini-btn' href='{% url "client_profile" task.linked_client.id %}'>
+                                    Client
+                                </a>
+                            {% else %}
+                                <span class='muted'>None</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <a class='mini-btn' href='{% url "task_detail" task.id %}'>
+                                Open
+                            </a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan='8'>No tasks found.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,52 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+
+<section class='page-header'>
+    <p class='eyebrow'>Operations Templates</p>
+    <h2>Task Templates</h2>
+    <p>Create reusable task workflows for common operations work.</p>
+
+    <div class='hero-actions'>
+        <a class='btn primary' href='{% url "create_task_template" %}'>Create Template</a>
+        <a class='btn secondary' href='{% url "task_dashboard" %}'>Task Dashboard</a>
+    </div>
+</section>
+
+<section class='stats-grid'>
+    <div class='stat-card'><span>{{ stats.total }}</span><p>Total Templates</p></div>
+    <div class='stat-card'><span>{{ stats.active }}</span><p>Active</p></div>
+    <div class='stat-card'><span>{{ stats.inactive }}</span><p>Inactive</p></div>
+    <div class='stat-card'><span>{{ stats.critical }}</span><p>Critical</p></div>
+</section>
+
+<section class='module-grid'>
+    {% for template in templates %}
+        <div class='module-card'>
+            <h4>{{ template.name }}</h4>
+            <p>{{ template.description|truncatechars:160 }}</p>
+
+            <div class='timeline-meta'>
+                <span>{{ template.get_default_priority_display }}</span>
+                <span>{{ template.default_due_days }} day(s)</span>
+                {% if template.is_active %}
+                    <span>Active</span>
+                {% else %}
+                    <span>Inactive</span>
+                {% endif %}
+            </div>
+
+            <div class='hero-actions small-actions'>
+                <a class='mini-btn' href='{% url "task_template_detail" template.id %}'>Open</a>
+                <a class='mini-btn' href='{% url "create_task_from_template" template.id %}'>Use Template</a>
+            </div>
+        </div>
+    {% empty %}
+        <div class='empty-state'>
+            <h3>No task templates yet</h3>
+            <p>Create your first reusable operations template.</p>
+        </div>
+    {% endfor %}
+</section>
+
+{% endblock %}

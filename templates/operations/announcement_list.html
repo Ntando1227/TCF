@@ -1,0 +1,109 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+
+<section class='page-header'>
+    <p class='eyebrow'>Team Communication</p>
+
+    <h2>Operations Announcements</h2>
+
+    <p>
+        Staff announcements, pinned updates, priority notices, and internal operations communication.
+    </p>
+
+    <div class='hero-actions'>
+        {% if can_manage_tasks %}
+            <a class='btn primary' href='{% url "create_announcement" %}'>
+                Create Announcement
+            </a>
+        {% endif %}
+
+        <a class='btn secondary' href='{% url "my_work_dashboard" %}'>
+            My Work
+        </a>
+    </div>
+</section>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class='alert'>{{ message }}</div>
+    {% endfor %}
+{% endif %}
+
+<section class='stats-grid'>
+    <div class='stat-card'>
+        <span>{{ stats.total }}</span>
+        <p>Total Announcements</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ stats.pinned }}</span>
+        <p>Pinned</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ stats.urgent }}</span>
+        <p>Urgent</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ stats.critical }}</span>
+        <p>Critical</p>
+    </div>
+</section>
+
+<section class='announcement-grid'>
+
+    {% for announcement in announcements %}
+        <div class='announcement-card announcement-{{ announcement.priority }} {% if announcement.is_pinned %}announcement-pinned{% endif %}'>
+            <div class='announcement-card-top'>
+                <div>
+                    <p class='eyebrow'>
+                        {{ announcement.get_priority_display }}
+                        {% if announcement.is_pinned %} · Pinned{% endif %}
+                    </p>
+
+                    <h3>{{ announcement.title }}</h3>
+                </div>
+
+                {% if not announcement.is_active %}
+                    <span class='badge'>Inactive</span>
+                {% endif %}
+            </div>
+
+            <p>{{ announcement.message|truncatechars:180 }}</p>
+
+            <div class='announcement-meta'>
+                <span>
+                    {% if announcement.created_by %}
+                        {{ announcement.created_by.username }}
+                    {% else %}
+                        System
+                    {% endif %}
+                </span>
+
+                <span>{{ announcement.created_at|date:'d M Y H:i' }}</span>
+            </div>
+
+            <div class='hero-actions small-actions'>
+                <a class='mini-btn' href='{% url "announcement_detail" announcement.id %}'>
+                    Open
+                </a>
+
+                {% if can_manage_tasks %}
+                    <a class='mini-btn' href='{% url "edit_announcement" announcement.id %}'>
+                        Edit
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    {% empty %}
+        <div class='empty-state'>
+            <h3>No announcements yet</h3>
+            <p>Post an announcement to start internal communication.</p>
+        </div>
+    {% endfor %}
+
+</section>
+
+{% endblock %}

@@ -1,0 +1,167 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+
+<section class='page-header'>
+
+    <p class='eyebrow'>File Workflow</p>
+
+    <h2>{{ client_file.title }}</h2>
+
+    <div class='status-bar'>
+
+        <div class='status-pill status-{{ client_file.status }}'>
+            {{ client_file.get_status_display }}
+        </div>
+
+        {% if client_file.approved_by %}
+            <div class='approval-meta'>
+                Reviewed by {{ client_file.approved_by.username }}
+                on {{ client_file.approved_at|date:'d M Y H:i' }}
+            </div>
+        {% endif %}
+
+    </div>
+
+    <p>
+        Folder: {{ folder.client_name }}
+        |
+        Category: {{ client_file.get_subfolder_display }}
+    </p>
+
+    <div class='hero-actions'>
+
+        <a class='btn primary'
+           href='{% url "download_client_file" client_file.id %}'>
+            Download File
+        </a>
+
+        <a class='btn secondary'
+           href='{% url "client_folder_detail" folder.id %}'>
+            Back to Folder
+        </a>
+
+        {% if user.profile.role == 'admin' or user.profile.role == 'manager' %}
+
+            <a class='btn success'
+               href='{% url "approve_client_file" client_file.id %}'>
+                Approve
+            </a>
+
+            <a class='btn warning'
+               href='{% url "request_changes_client_file" client_file.id %}'>
+                Needs Changes
+            </a>
+
+            <a class='btn danger'
+               href='{% url "reject_client_file" client_file.id %}'>
+                Reject
+            </a>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class='alert'>
+            {{ message }}
+        </div>
+    {% endfor %}
+{% endif %}
+
+<section class='preview-layout'>
+
+    <div class='panel preview-panel'>
+
+        {% if preview_type == 'pdf' %}
+
+            <iframe
+                class='pdf-preview'
+                src='{% url "stream_client_file" client_file.id %}'>
+            </iframe>
+
+        {% elif preview_type == 'image' %}
+
+            <div class='image-preview-wrap'>
+                <img
+                    class='image-preview'
+                    src='{% url "stream_client_file" client_file.id %}'
+                    alt='{{ client_file.title }}'>
+            </div>
+
+        {% elif preview_type == 'text' %}
+
+            <pre class='text-preview'>{{ text_content }}</pre>
+
+        {% else %}
+
+            <div class='empty-state'>
+                <h3>Preview unavailable</h3>
+
+                <p>
+                    Download the file to view it locally.
+                </p>
+            </div>
+
+        {% endif %}
+
+    </div>
+
+    <aside class='panel comments-panel'>
+
+        <div class='panel-header'>
+            <h3>Workflow Discussion</h3>
+            <p>{{ comments.count }} message(s)</p>
+        </div>
+
+        <form method='post' class='comment-form'>
+
+            {% csrf_token %}
+
+            <div class='form-group'>
+                {{ comment_form.comment }}
+            </div>
+
+            <button class='btn primary' type='submit'>
+                Post Comment
+            </button>
+
+        </form>
+
+        <div class='comment-list'>
+
+            {% for comment in comments %}
+
+                <div class='comment-card'>
+
+                    <div class='comment-header'>
+                        <strong>{{ comment.author.username }}</strong>
+
+                        <span>
+                            {{ comment.created_at|date:'d M Y H:i' }}
+                        </span>
+                    </div>
+
+                    <p>{{ comment.comment }}</p>
+
+                </div>
+
+            {% empty %}
+
+                <div class='empty-state compact-empty'>
+                    <h3>No discussion yet</h3>
+                    <p>Start discussing the file.</p>
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+    </aside>
+
+</section>
+
+{% endblock %}

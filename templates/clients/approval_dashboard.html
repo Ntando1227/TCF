@@ -1,0 +1,182 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+
+<section class='page-header'>
+    <p class='eyebrow'>Workflow Control Centre</p>
+
+    <h2>Approval Dashboard</h2>
+
+    <p>
+        Review uploaded files, open previews, approve work,
+        reject submissions, or request changes.
+    </p>
+</section>
+
+<section class='stats-grid'>
+
+    <div class='stat-card'>
+        <span>{{ stats.pending }}</span>
+        <p>Pending Review</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ stats.approved }}</span>
+        <p>Approved</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ stats.rejected }}</span>
+        <p>Rejected</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ stats.changes_requested }}</span>
+        <p>Needs Changes</p>
+    </div>
+
+</section>
+
+<section class='panel'>
+
+    <div class='panel-header'>
+        <h3>Find Review Items</h3>
+        <p>Filter approval queue</p>
+    </div>
+
+    <form method='get' class='filter-form'>
+
+        <input
+            class='form-control'
+            type='text'
+            name='q'
+            value='{{ search_query }}'
+            placeholder='Search file title...'
+        >
+
+        <select class='form-control' name='status'>
+            <option value='all' {% if status_filter == 'all' %}selected{% endif %}>
+                All statuses
+            </option>
+
+            {% for value, label in status_choices %}
+                <option value='{{ value }}' {% if status_filter == value %}selected{% endif %}>
+                    {{ label }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <button class='btn primary' type='submit'>
+            Search Queue
+        </button>
+
+        <a class='btn secondary' href='{% url "approval_dashboard" %}'>
+            Reset
+        </a>
+
+    </form>
+
+</section>
+
+<section class='panel'>
+
+    <div class='panel-header'>
+        <h3>Approval Queue</h3>
+        <p>{{ files.count }} file(s)</p>
+    </div>
+
+    {% if files %}
+
+        <div class='table-wrap'>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>File</th>
+                        <th>Client Folder</th>
+                        <th>Status</th>
+                        <th>Uploaded</th>
+                        <th>Reviewer</th>
+                        <th>Reviewed</th>
+                        <th>Open</th>
+                        <th>Quick Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for file in files %}
+
+                        <tr>
+                            <td>{{ file.title }}</td>
+
+                            <td>{{ file.client_folder.client_name }}</td>
+
+                            <td>
+                                <span class='status-pill status-{{ file.status }}'>
+                                    {{ file.get_status_display }}
+                                </span>
+                            </td>
+
+                            <td>{{ file.uploaded_at|date:'d M Y H:i' }}</td>
+
+                            <td>
+                                {% if file.approved_by %}
+                                    {{ file.approved_by.username }}
+                                {% else %}
+                                    <span class='muted'>Not reviewed</span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if file.approved_at %}
+                                    {{ file.approved_at|date:'d M Y H:i' }}
+                                {% else %}
+                                    <span class='muted'>Pending</span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                <a class='mini-btn' href='{% url "preview_client_file" file.id %}'>
+                                    Preview
+                                </a>
+                            </td>
+
+                            <td>
+                                <div class='inline-actions'>
+                                    <a class='mini-btn success-mini' href='{% url "approve_client_file" file.id %}'>
+                                        Approve
+                                    </a>
+
+                                    <a class='mini-btn warning-mini' href='{% url "request_changes_client_file" file.id %}'>
+                                        Changes
+                                    </a>
+
+                                    <a class='mini-btn danger' href='{% url "reject_client_file" file.id %}'>
+                                        Reject
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+
+                    {% endfor %}
+
+                </tbody>
+            </table>
+
+        </div>
+
+    {% else %}
+
+        <div class='empty-state'>
+            <h3>No approval items found</h3>
+            <p>
+                Try another status filter or wait for new uploads.
+            </p>
+        </div>
+
+    {% endif %}
+
+</section>
+
+{% endblock %}

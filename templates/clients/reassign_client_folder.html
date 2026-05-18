@@ -1,0 +1,41 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+
+<section class='page-header'>
+    <p class='eyebrow'>Folder Assignment</p>
+
+    <h2>Reassign Folder</h2>
+
+    <p>
+        Change who owns and can access
+        <strong>{{ folder.client_name }}</strong>.
+    </p>
+</section>
+
+<section class='panel form-panel'>
+
+    <form method='post'>
+
+        {% csrf_token %}
+
+        <div class='form-group'>
+            {{ form.owner.label_tag }}
+            {{ form.owner }}
+        </div>
+
+        <div class='hero-actions'>
+            <button class='btn primary' type='submit'>
+                Save Assignment
+            </button>
+
+            <a class='btn secondary' href='{% url "client_folder_detail" folder.id %}'>
+                Cancel
+            </a>
+        </div>
+
+    </form>
+
+</section>
+
+{% endblock %}

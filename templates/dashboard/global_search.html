@@ -1,0 +1,296 @@
+﻿{% extends 'base.html' %}
+
+{% block page_title %}
+Global Search
+{% endblock %}
+
+{% block content %}
+
+<section class='page-header'>
+    <p class='eyebrow'>Unified Search</p>
+
+    <h2>Search and filter your workspace.</h2>
+
+    <p>
+        Search across clients, documents, files, requests, tasks,
+        enquiries, announcements, and workflow logs.
+    </p>
+</section>
+
+<section class='global-search-panel'>
+
+    <form method='get' class='advanced-search-form-v3'>
+
+        <div class='search-top-row'>
+
+            <div class='search-wide'>
+                <label>Search keyword</label>
+
+                <input
+                    class='global-search-input'
+                    type='text'
+                    name='q'
+                    value='{{ query }}'
+                    placeholder='Search clients, tasks, requests, files, documents...'
+                    autofocus
+                >
+            </div>
+
+            <div class='search-actions top-search-actions'>
+                <button class='btn primary' type='submit'>
+                    Search
+                </button>
+
+                <button
+                    class='btn secondary'
+                    type='button'
+                    onclick='toggleSearchFilters()'
+                    id='filterToggleButton'
+                >
+                    Show Filters
+                </button>
+
+                <a class='btn secondary' href='{% url "global_search" %}'>
+                    Reset
+                </a>
+            </div>
+
+        </div>
+
+        <div class='collapsible-search-filters' id='searchFiltersPanel'>
+
+            <div class='search-top-row'>
+
+                <div>
+                    <label>Client name</label>
+
+                    <input
+                        class='form-control'
+                        type='text'
+                        name='client_name'
+                        value='{{ client_name }}'
+                        placeholder='Optional client filter'
+                    >
+                </div>
+
+                <div>
+                    <label>Sort</label>
+
+                    <select class='form-control' name='sort'>
+                        <option value='newest'>Newest first</option>
+                        <option value='oldest'>Oldest first</option>
+                        <option value='title'>Title A-Z</option>
+                        <option value='category'>Category A-Z</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <div class='search-filter-row'>
+
+                <div>
+                    <label>Categories</label>
+
+                    <select
+                        class='form-control multi-select'
+                        name='categories'
+                        multiple
+                        size='7'
+                    >
+                        {% for item in search_categories %}
+                            <option
+                                value='{{ item.value }}'
+                                {% if item.value in selected_categories %}selected{% endif %}
+                            >
+                                {{ item.label }}
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    <small class='filter-note'>
+                        Hold Ctrl and click to select multiple.
+                    </small>
+                </div>
+
+                <div>
+                    <label>Document type</label>
+
+                    <select
+                        class='form-control multi-select'
+                        name='document_type'
+                        multiple
+                        size='7'
+                    >
+                        <option value='contract'>Contract</option>
+                        <option value='invoice'>Invoice</option>
+                        <option value='proposal'>Proposal</option>
+                        <option value='quotation'>Quotation</option>
+                        <option value='report'>Report</option>
+                        <option value='agreement'>Agreement</option>
+                        <option value='letter'>Letter</option>
+                        <option value='presentation'>Presentation</option>
+                        <option value='spreadsheet'>Spreadsheet</option>
+                        <option value='compliance'>Compliance</option>
+                    </select>
+
+                    <small class='filter-note'>
+                        Hold Ctrl and click to select multiple.
+                    </small>
+                </div>
+
+                <div>
+                    <label>Status</label>
+
+                    <select class='form-control' name='status'>
+                        <option value='all'>Any status</option>
+                        <option value='submitted'>Submitted</option>
+                        <option value='pending'>Pending</option>
+                        <option value='under_review'>Under Review</option>
+                        <option value='in_progress'>In Progress</option>
+                        <option value='blocked'>Blocked</option>
+                        <option value='completed'>Completed</option>
+                        <option value='approved'>Approved</option>
+                        <option value='rejected'>Rejected</option>
+                        <option value='new'>New</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label>Priority</label>
+
+                    <select class='form-control' name='priority'>
+                        <option value='all'>Any priority</option>
+                        <option value='low'>Low</option>
+                        <option value='medium'>Medium</option>
+                        <option value='high'>High</option>
+                        <option value='urgent'>Urgent</option>
+                        <option value='critical'>Critical</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <div class='search-filter-row compact'>
+
+                <div>
+                    <label>Date from</label>
+                    <input class='form-control' type='date' name='date_from' value='{{ date_from }}'>
+                </div>
+
+                <div>
+                    <label>Date to</label>
+                    <input class='form-control' type='date' name='date_to' value='{{ date_to }}'>
+                </div>
+
+            </div>
+
+        </div>
+
+    </form>
+
+</section>
+
+<section class='stats-grid'>
+    <div class='stat-card'><span>{{ stats.total }}</span><p>Total Results</p></div>
+    <div class='stat-card'><span>{{ stats.requests }}</span><p>Requests</p></div>
+    <div class='stat-card'><span>{{ stats.tasks }}</span><p>Tasks</p></div>
+    <div class='stat-card'><span>{{ stats.documents }}</span><p>Documents</p></div>
+</section>
+
+<section class='panel'>
+
+    <div class='panel-header'>
+        <h3>Search Results</h3>
+
+        <p>
+            {% if query %}
+                Results for "{{ query }}"
+            {% else %}
+                Use the search bar and filters above to search your workspace.
+            {% endif %}
+        </p>
+    </div>
+
+    <div class='global-results-list'>
+
+        {% for item in results %}
+
+            <a class='global-result-card' href='{{ item.url }}'>
+
+                <div class='global-result-icon'>
+                    {% if item.category == 'Client' %}C
+                    {% elif item.category == 'File' %}F
+                    {% elif item.category == 'Document' %}D
+                    {% elif item.category == 'Request' %}R
+                    {% elif item.category == 'Task' %}T
+                    {% elif item.category == 'Public Enquiry' %}E
+                    {% elif item.category == 'Announcement' %}A
+                    {% else %}W
+                    {% endif %}
+                </div>
+
+                <div class='global-result-content'>
+
+                    <div class='global-result-top'>
+                        <span>{{ item.category }}</span>
+                        <small>{{ item.date|date:'d M Y H:i' }}</small>
+                    </div>
+
+                    <h4>{{ item.title }}</h4>
+
+                    <p>{{ item.description|truncatechars:220 }}</p>
+
+                </div>
+
+            </a>
+
+        {% empty %}
+
+            <div class='clean-empty-state'>
+
+                <div class='empty-icon'>⌕</div>
+
+                <h3>No results found</h3>
+
+                <p>
+                    Try adjusting your search keyword, category filters,
+                    document type filters, or date range.
+                </p>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+</section>
+
+<script>
+function toggleSearchFilters() {
+    const panel = document.getElementById('searchFiltersPanel');
+    const button = document.getElementById('filterToggleButton');
+
+    if (panel.classList.contains('open')) {
+        panel.classList.remove('open');
+        button.innerText = 'Show Filters';
+        localStorage.setItem('searchFiltersOpen', 'false');
+    } else {
+        panel.classList.add('open');
+        button.innerText = 'Hide Filters';
+        localStorage.setItem('searchFiltersOpen', 'true');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    const panel = document.getElementById('searchFiltersPanel');
+    const button = document.getElementById('filterToggleButton');
+    const savedState = localStorage.getItem('searchFiltersOpen');
+
+    if (savedState === 'true') {
+        panel.classList.add('open');
+        button.innerText = 'Hide Filters';
+    }
+});
+</script>
+
+{% endblock %}

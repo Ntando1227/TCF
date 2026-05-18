@@ -1,0 +1,280 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+
+<section class='page-header'>
+    <p class='eyebrow'>My Workspace</p>
+
+    <h2>My Work Dashboard</h2>
+
+    <p>
+        Your assigned tasks, overdue work, linked service requests, comments, and personal workload.
+    </p>
+
+    <div class='hero-actions'>
+        <a class='btn primary' href='{% url "task_board" %}'>
+            Operations Board
+        </a>
+
+        <a class='btn secondary' href='{% url "task_dashboard" %}'>
+            Task Dashboard
+        </a>
+    </div>
+</section>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class='alert'>{{ message }}</div>
+    {% endfor %}
+{% endif %}
+
+<section class='stats-grid'>
+    <div class='stat-card'>
+        <span>{{ stats.total_tasks }}</span>
+        <p>My Tasks</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ stats.in_progress }}</span>
+        <p>In Progress</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ stats.overdue }}</span>
+        <p>Overdue</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ stats.assigned_requests }}</span>
+        <p>Assigned Requests</p>
+    </div>
+</section>
+
+<section class='stats-grid'>
+    <div class='stat-card'>
+        <span>{{ stats.todo }}</span>
+        <p>To Do</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ stats.blocked }}</span>
+        <p>Blocked</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ stats.completed }}</span>
+        <p>Completed</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ user.username }}</span>
+        <p>Current User</p>
+    </div>
+</section>
+
+<section class='analytics-grid'>
+
+    <div class='panel'>
+        <div class='panel-header'>
+            <h3>Overdue Tasks</h3>
+            <p>Work that needs immediate attention</p>
+        </div>
+
+        <div class='metric-list'>
+            {% for task in overdue_tasks %}
+                <div class='metric-row'>
+                    <div>
+                        <strong>{{ task.title }}</strong>
+                        <p class='muted'>Due {{ task.due_date|date:'d M Y' }}</p>
+                    </div>
+
+                    <a class='mini-btn' href='{% url "task_detail" task.id %}'>
+                        Open
+                    </a>
+                </div>
+            {% empty %}
+                <div class='empty-state compact-empty'>
+                    <h3>No overdue tasks</h3>
+                    <p>You are clear for now.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class='panel'>
+        <div class='panel-header'>
+            <h3>Assigned Requests</h3>
+            <p>Service requests assigned to you</p>
+        </div>
+
+        <div class='metric-list'>
+            {% for request_item in my_requests %}
+                <div class='metric-row'>
+                    <div>
+                        <strong>{{ request_item.title }}</strong>
+                        <p class='muted'>{{ request_item.get_status_display }} - {{ request_item.get_priority_display }}</p>
+                    </div>
+
+                    <a class='mini-btn' href='{% url "request_detail" request_item.id %}'>
+                        Open
+                    </a>
+                </div>
+            {% empty %}
+                <div class='empty-state compact-empty'>
+                    <h3>No assigned requests</h3>
+                    <p>Assigned service requests will appear here.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</section>
+
+<section class='panel'>
+    <div class='panel-header'>
+        <h3>My Task Queue</h3>
+        <p>Latest assigned tasks</p>
+    </div>
+
+    <div class='table-wrap'>
+        <table>
+            <thead>
+                <tr>
+                    <th>Task</th>
+                    <th>Status</th>
+                    <th>Priority</th>
+                    <th>Due</th>
+                    <th>Linked Client</th>
+                    <th>Linked Request</th>
+                    <th>Open</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for task in my_tasks %}
+                    <tr>
+                        <td>{{ task.title }}</td>
+
+                        <td>
+                            <span class='task-status task-status-{{ task.status }}'>
+                                {{ task.get_status_display }}
+                            </span>
+                        </td>
+
+                        <td>
+                            <span class='priority-badge priority-{{ task.priority }}'>
+                                {{ task.get_priority_display }}
+                            </span>
+                        </td>
+
+                        <td>
+                            {% if task.due_date %}
+                                {{ task.due_date|date:'d M Y' }}
+
+                                {% if task.is_overdue %}
+                                    <span class='overdue-pill'>Overdue</span>
+                                {% endif %}
+                            {% else %}
+                                <span class='muted'>No due date</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if task.linked_client %}
+                                <a class='mini-btn' href='{% url "client_profile" task.linked_client.id %}'>
+                                    Client
+                                </a>
+                            {% else %}
+                                <span class='muted'>None</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            {% if task.linked_request %}
+                                <a class='mini-btn' href='{% url "request_detail" task.linked_request.id %}'>
+                                    Request
+                                </a>
+                            {% else %}
+                                <span class='muted'>None</span>
+                            {% endif %}
+                        </td>
+
+                        <td>
+                            <a class='mini-btn' href='{% url "task_detail" task.id %}'>
+                                Open
+                            </a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan='7'>You do not have assigned tasks yet.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class='analytics-grid'>
+
+    <div class='panel'>
+        <div class='panel-header'>
+            <h3>Recent Task Comments</h3>
+            <p>Recent discussion on your assigned tasks</p>
+        </div>
+
+        <div class='comment-list'>
+            {% for comment in recent_comments %}
+                <div class='comment-card'>
+                    <div class='comment-header'>
+                        <strong>{{ comment.author.username }}</strong>
+                        <span>{{ comment.created_at|date:'d M Y H:i' }}</span>
+                    </div>
+
+                    <p>{{ comment.comment }}</p>
+
+                    <a class='mini-btn' href='{% url "task_detail" comment.task.id %}'>
+                        Open Task
+                    </a>
+                </div>
+            {% empty %}
+                <div class='empty-state compact-empty'>
+                    <h3>No comments yet</h3>
+                    <p>Comments on your assigned tasks will appear here.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class='panel'>
+        <div class='panel-header'>
+            <h3>Work Summary</h3>
+            <p>Your current operational load</p>
+        </div>
+
+        <div class='metric-list'>
+            <div class='metric-row'>
+                <span>To Do</span>
+                <strong>{{ stats.todo }}</strong>
+            </div>
+
+            <div class='metric-row'>
+                <span>In Progress</span>
+                <strong>{{ stats.in_progress }}</strong>
+            </div>
+
+            <div class='metric-row'>
+                <span>Blocked</span>
+                <strong>{{ stats.blocked }}</strong>
+            </div>
+
+            <div class='metric-row'>
+                <span>Completed</span>
+                <strong>{{ stats.completed }}</strong>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+{% endblock %}

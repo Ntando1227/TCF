@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class='page-header'>
+    <p class='eyebrow'>Smart Form Engine</p>
+    <h2>Generate Document</h2>
+    <p>Fill this form once. That Corporate Flow will generate a professional PDF automatically.</p>
+</section>
+
+<section class='panel form-panel'>
+    <form method='post'>
+        {% csrf_token %}
+
+        <div class='form-grid'>
+            <div class='form-group'>
+                <label>Client Name</label>
+                {{ form.client_name }}
+            </div>
+
+            <div class='form-group'>
+                <label>Client Email</label>
+                {{ form.client_email }}
+            </div>
+
+            <div class='form-group'>
+                <label>Document Type</label>
+                {{ form.document_type }}
+            </div>
+
+            <div class='form-group'>
+                <label>Amount</label>
+                {{ form.amount }}
+            </div>
+        </div>
+
+        <div class='form-group'>
+            <label>Document Title</label>
+            {{ form.title }}
+        </div>
+
+        <div class='form-group'>
+            <label>Description</label>
+            {{ form.description }}
+        </div>
+
+        <div class='hero-actions'>
+            <button class='btn primary' type='submit'>Generate PDF</button>
+            <a class='btn secondary' href='{% url "document_list" %}'>Cancel</a>
+        </div>
+    </form>
+</section>
+{% endblock %}

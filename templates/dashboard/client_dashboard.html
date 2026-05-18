@@ -1,0 +1,234 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+
+<section class='hero'>
+    <div>
+        <p class='eyebrow'>Client Portal</p>
+
+        <h2>Welcome back, {{ user.first_name|default:user.username }}.</h2>
+
+        <p class='hero-text'>
+            View your assigned folders, upload required documents, download files,
+            and keep track of updates from your workspace.
+        </p>
+
+        <div class='hero-actions'>
+            <a class='btn primary' href='{% url "client_folder_list" %}'>
+                My Folders
+            </a>
+
+            <a class='btn secondary' href='{% url "notification_list" %}'>
+                My Notifications
+            </a>
+        </div>
+    </div>
+
+    <div class='hero-card'>
+        <h3>My Workspace</h3>
+
+        <p>
+            Your files and client folders are managed securely inside
+            That Corporate Flow.
+        </p>
+
+        <div class='flow-line'>
+            <span>View</span>
+            <span>Upload</span>
+            <span>Download</span>
+            <span>Track</span>
+        </div>
+    </div>
+</section>
+
+<section class='stats-grid'>
+    <div class='stat-card'>
+        <span>{{ stats.clients_created }}</span>
+        <p>My Folders</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ stats.total_files }}</span>
+        <p>My Files</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ stats.active_files }}</span>
+        <p>Active Files</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ stats.archived_files }}</span>
+        <p>Archived Files</p>
+    </div>
+</section>
+
+<section class='module-grid dashboard-grid'>
+
+    <div class='module-card'>
+        <h4>My Client Folders</h4>
+
+        <p>
+            Open assigned folders, view uploaded files,
+            and download available documents.
+        </p>
+
+        <div class='hero-actions small-actions'>
+            <a class='mini-btn' href='{% url "client_folder_list" %}'>
+                Open My Folders
+            </a>
+        </div>
+    </div>
+
+    <div class='module-card'>
+        <h4>My Notifications</h4>
+
+        <p>
+            View assignment updates, file changes,
+            upload notices, and platform alerts.
+        </p>
+
+        <div class='hero-actions small-actions'>
+            <a class='mini-btn' href='{% url "notification_list" %}'>
+                View Notifications
+            </a>
+        </div>
+    </div>
+
+    <div class='module-card'>
+        <h4>Recent Files</h4>
+
+        <p>
+            Quickly check the newest files added
+            to your assigned folders.
+        </p>
+
+        <div class='hero-actions small-actions'>
+            <a class='mini-btn' href='{% url "client_folder_list" %}'>
+                Browse Files
+            </a>
+        </div>
+    </div>
+
+</section>
+
+<section class='panel'>
+    <div class='panel-header'>
+        <h3>My Assigned Folders</h3>
+        <p>{{ recent_folders|length }} shown</p>
+    </div>
+
+    {% if recent_folders %}
+        <div class='module-grid'>
+            {% for folder in recent_folders %}
+                <div class='module-card'>
+                    <h4>{{ folder.client_name }}</h4>
+                    <p>{{ folder.client_email|default:'No email provided' }}</p>
+                    <p class='file-path'>{{ folder.folder_path }}</p>
+
+                    <div class='hero-actions small-actions'>
+                        <a class='mini-btn' href='{% url "client_folder_detail" folder.id %}'>
+                            Open Folder
+                        </a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class='empty-state'>
+            <h3>No folders assigned yet</h3>
+            <p>
+                When a folder is assigned to your account,
+                it will appear here.
+            </p>
+        </div>
+    {% endif %}
+</section>
+
+<section class='panel'>
+    <div class='panel-header'>
+        <h3>Recent Files</h3>
+        <p>{{ recent_files|length }} shown</p>
+    </div>
+
+    {% if recent_files %}
+        <div class='table-wrap'>
+            <table>
+                <thead>
+                    <tr>
+                        <th>File</th>
+                        <th>Folder</th>
+                        <th>Category</th>
+                        <th>Uploaded</th>
+                        <th>Download</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for file in recent_files %}
+                        <tr>
+                            <td>{{ file.title }}</td>
+                            <td>{{ file.client_folder.client_name }}</td>
+                            <td><span class='badge'>{{ file.get_subfolder_display }}</span></td>
+                            <td>{{ file.uploaded_at|date:'d M Y H:i' }}</td>
+                            <td>
+                                <a class='mini-btn' href='{% url "download_client_file" file.id %}'>
+                                    Download
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class='empty-state'>
+            <h3>No files yet</h3>
+            <p>Files uploaded to your folders will appear here.</p>
+        </div>
+    {% endif %}
+</section>
+
+<section class='panel'>
+    <div class='panel-header'>
+        <h3>My Notifications</h3>
+        <p>{{ recent_notifications|length }} shown</p>
+    </div>
+
+    {% if recent_notifications %}
+        <div class='notification-list'>
+            {% for notification in recent_notifications %}
+                <div class='notification-card {% if not notification.is_read %}unread-notification{% endif %}'>
+                    <div>
+                        <span class='badge'>{{ notification.get_notification_type_display }}</span>
+
+                        <h4>{{ notification.title }}</h4>
+
+                        <p>{{ notification.message }}</p>
+
+                        <p class='muted'>
+                            {{ notification.created_at|date:'d M Y H:i' }}
+                        </p>
+                    </div>
+
+                    <div>
+                        {% if notification.is_read %}
+                            <span class='muted'>Read</span>
+                        {% else %}
+                            <a class='mini-btn' href='{% url "mark_notification_read" notification.id %}'>
+                                Open
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class='empty-state'>
+            <h3>No notifications yet</h3>
+            <p>Your updates and alerts will appear here.</p>
+        </div>
+    {% endif %}
+</section>
+
+{% endblock %}

@@ -1,0 +1,130 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+
+<section class='page-header'>
+    <p class='eyebrow'>Operations Template</p>
+    <h2>{{ template.name }}</h2>
+    <p>{{ template.get_default_priority_display }} priority · Due in {{ template.default_due_days }} day(s)</p>
+
+    <div class='hero-actions'>
+        <a class='btn primary' href='{% url "create_task_from_template" template.id %}'>Use Template</a>
+        <a class='btn secondary' href='{% url "edit_task_template" template.id %}'>Edit Template</a>
+        <a class='btn secondary' href='{% url "task_template_list" %}'>Back to Templates</a>
+    </div>
+</section>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class='alert'>{{ message }}</div>
+    {% endfor %}
+{% endif %}
+
+<section class='panel'>
+    <div class='panel-header'>
+        <h3>Template Details</h3>
+        <p>{% if template.is_active %}Active{% else %}Inactive{% endif %}</p>
+    </div>
+
+    <p class='request-description'>{{ template.description }}</p>
+</section>
+
+<section class='analytics-grid'>
+
+    <div class='panel'>
+        <div class='panel-header'>
+            <h3>Predefined Checklist Steps</h3>
+            <p>These steps are copied into every task created from this template</p>
+        </div>
+
+        <div class='checklist-list'>
+            {% for item in template.checklist_items.all %}
+                <div class='checklist-row'>
+                    <div>
+                        <strong>{{ item.order }}. {{ item.title }}</strong>
+                    </div>
+
+                    <a class='mini-btn danger-mini' href='{% url "delete_template_checklist_item" item.id %}'>
+                        Delete
+                    </a>
+                </div>
+            {% empty %}
+                <div class='empty-state compact-empty'>
+                    <h3>No checklist steps yet</h3>
+                    <p>Add steps to make this template more powerful.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class='panel'>
+        <div class='panel-header'>
+            <h3>Add Checklist Step</h3>
+            <p>Add a reusable checklist item</p>
+        </div>
+
+        <form method='post' action='{% url "add_template_checklist_item" template.id %}'>
+            {% csrf_token %}
+
+            <div class='form-grid'>
+                <div class='form-group'>
+                    <label for='id_title'>Step Title</label>
+                    <input class='form-control' type='text' name='title' id='id_title' placeholder='Example: Review submitted documents'>
+                </div>
+
+                <div class='form-group'>
+                    <label for='id_order'>Order</label>
+                    <input class='form-control' type='number' name='order' id='id_order' min='1' value='1'>
+                </div>
+            </div>
+
+            <button class='btn primary' type='submit'>
+                Add Step
+            </button>
+        </form>
+    </div>
+
+</section>
+
+<section class='panel'>
+    <div class='panel-header'>
+        <h3>Recent Tasks From This Template</h3>
+        <p>{{ tasks.count }} shown</p>
+    </div>
+
+    <div class='table-wrap'>
+        <table>
+            <thead>
+                <tr>
+                    <th>Task</th>
+                    <th>Assigned To</th>
+                    <th>Status</th>
+                    <th>Priority</th>
+                    <th>Checklist</th>
+                    <th>Created</th>
+                    <th>Open</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for task in tasks %}
+                    <tr>
+                        <td>{{ task.title }}</td>
+                        <td>{% if task.assigned_to %}{{ task.assigned_to.username }}{% else %}Unassigned{% endif %}</td>
+                        <td>{{ task.get_status_display }}</td>
+                        <td>{{ task.get_priority_display }}</td>
+                        <td>{{ task.checklist_completed }}/{{ task.checklist_total }}</td>
+                        <td>{{ task.created_at|date:'d M Y H:i' }}</td>
+                        <td><a class='mini-btn' href='{% url "task_detail" task.id %}'>Open</a></td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan='7'>No tasks created from this template yet.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+{% endblock %}

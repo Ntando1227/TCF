@@ -1,0 +1,170 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+
+<section class='page-header'>
+    <p class='eyebrow'>Business Intake</p>
+
+    <h2>Service Requests</h2>
+
+    <p>
+        Submit, track, review, link, respond to, and manage structured business requests.
+    </p>
+
+    <div class='hero-actions'>
+        <a class='btn primary' href='{% url "create_request" %}'>
+            Submit New Request
+        </a>
+    </div>
+</section>
+
+{% if messages %}
+    {% for message in messages %}
+        <div class='alert'>{{ message }}</div>
+    {% endfor %}
+{% endif %}
+
+<section class='stats-grid'>
+    <div class='stat-card'>
+        <span>{{ stats.submitted }}</span>
+        <p>Submitted</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ stats.under_review }}</span>
+        <p>Under Review</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ stats.responses }}</span>
+        <p>Responses</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ stats.downloads }}</span>
+        <p>Downloads</p>
+    </div>
+</section>
+
+<section class='panel'>
+    <div class='panel-header'>
+        <h3>Find Requests</h3>
+        <p>Search and filter intake queue</p>
+    </div>
+
+    <form method='get' class='document-filter-form'>
+        <input
+            class='form-control'
+            type='text'
+            name='q'
+            value='{{ search_query }}'
+            placeholder='Search request title...'
+        >
+
+        <select class='form-control' name='status'>
+            <option value='all' {% if status_filter == 'all' %}selected{% endif %}>
+                All statuses
+            </option>
+
+            {% for value, label in status_choices %}
+                <option value='{{ value }}' {% if status_filter == value %}selected{% endif %}>
+                    {{ label }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <select class='form-control' name='type'>
+            <option value='all' {% if type_filter == 'all' %}selected{% endif %}>
+                All request types
+            </option>
+
+            {% for value, label in request_types %}
+                <option value='{{ value }}' {% if type_filter == value %}selected{% endif %}>
+                    {{ label }}
+                </option>
+            {% endfor %}
+        </select>
+
+        <button class='btn primary' type='submit'>
+            Search Requests
+        </button>
+
+        <a class='btn secondary' href='{% url "request_list" %}'>
+            Reset
+        </a>
+    </form>
+</section>
+
+<section class='panel'>
+    <div class='panel-header'>
+        <h3>Request Queue</h3>
+        <p>{{ service_requests.count }} request(s)</p>
+    </div>
+
+    {% if service_requests %}
+        <div class='table-wrap'>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Request</th>
+                        <th>Type</th>
+                        <th>Status</th>
+                        <th>Submitted By</th>
+                        <th>Responses</th>
+                        <th>Latest Response</th>
+                        <th>Open</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for item in service_requests %}
+                        <tr>
+                            <td>{{ item.title }}</td>
+
+                            <td>
+                                <span class='badge'>{{ item.get_request_type_display }}</span>
+                            </td>
+
+                            <td>
+                                <span class='status-pill request-status-{{ item.status }}'>
+                                    {{ item.get_status_display }}
+                                </span>
+                            </td>
+
+                            <td>{{ item.submitted_by.username }}</td>
+
+                            <td>
+                                {% if item.responses.count > 0 %}
+                                    <span class='badge'>{{ item.responses.count }}</span>
+                                {% else %}
+                                    <span class='muted'>None</span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if item.latest_response %}
+                                    {{ item.latest_response.responded_at|date:'d M Y H:i' }}
+                                {% else %}
+                                    <span class='muted'>Pending</span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                <a class='mini-btn' href='{% url "request_detail" item.id %}'>
+                                    Open
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class='empty-state'>
+            <h3>No requests found</h3>
+            <p>Submit a new request or adjust your filters.</p>
+        </div>
+    {% endif %}
+</section>
+
+{% endblock %}

@@ -1,0 +1,73 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+
+<section class='page-header'>
+    <p class='eyebrow'>PowerShell Automation Engine</p>
+
+    <h2>Workflow Automations</h2>
+
+    <p>
+        These automations are triggered by Django,
+        but executed through PowerShell scripts.
+    </p>
+
+    <div class='hero-actions'>
+        <a class='btn primary' href='{% url "workflow_logs" %}'>
+            View Workflow Logs
+        </a>
+
+        {% if can_run_workflow %}
+            <a class='btn secondary' href='{% url "run_backup_now" %}'>
+                Run Backup Now
+            </a>
+        {% endif %}
+    </div>
+</section>
+
+<section class='module-grid'>
+
+    {% for workflow in workflows %}
+
+    <div class='module-card'>
+
+        <h4>{{ workflow.name }}</h4>
+
+        <p>
+            Trigger:
+            <strong>{{ workflow.get_trigger_display }}</strong>
+        </p>
+
+        <p>
+            {{ workflow.description }}
+        </p>
+
+        <p>
+            Status:
+
+            {% if workflow.is_active %}
+                <span class='badge'>Active</span>
+            {% else %}
+                <span class='badge'>Inactive</span>
+            {% endif %}
+        </p>
+
+    </div>
+
+    {% empty %}
+
+    <div class='empty-state'>
+        <h3>No workflows yet</h3>
+
+        <p>
+            Create a client folder, upload a contract,
+            upload a report, generate an invoice,
+            or run backup to activate workflows.
+        </p>
+    </div>
+
+    {% endfor %}
+
+</section>
+
+{% endblock %}

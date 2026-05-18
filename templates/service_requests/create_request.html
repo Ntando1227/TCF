@@ -1,0 +1,91 @@
+﻿{% extends 'base.html' %}
+
+{% block page_title %}
+Create Request
+{% endblock %}
+
+{% block content %}
+
+<section class='form-hero'>
+    <div>
+        <p class='eyebrow'>Service Request</p>
+        <h2>Create a new request.</h2>
+        <p>
+            Capture the work clearly so the team can review, assign,
+            fulfil, and respond with the correct documents or links.
+        </p>
+    </div>
+
+    <div class='form-hero-card'>
+        <span>01</span>
+        <p>Submit request</p>
+    </div>
+</section>
+
+<section class='form-layout'>
+
+    <div class='form-main-card'>
+        <div class='panel-header'>
+            <h3>Request Details</h3>
+            <p>Provide enough information for the team to understand the work.</p>
+        </div>
+
+        <form method='post' enctype='multipart/form-data'>
+            {% csrf_token %}
+
+            <div class='clean-form-grid'>
+                {% for field in form %}
+                    <div class='clean-form-group {% if field.field.widget.input_type == "textarea" %}full-width{% endif %}'>
+                        {{ field.label_tag }}
+                        {{ field }}
+
+                        {% if field.help_text %}
+                            <small>{{ field.help_text }}</small>
+                        {% endif %}
+
+                        {% if field.errors %}
+                            <div class='field-error'>{{ field.errors }}</div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <div class='form-action-row'>
+                <button class='btn primary' type='submit'>
+                    Submit Request
+                </button>
+
+                <a class='btn secondary' href='{% url "request_list" %}'>
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <aside class='form-side-card'>
+        <div class='panel-header'>
+            <h3>Before submitting</h3>
+            <p>Helpful request checklist.</p>
+        </div>
+
+        <div class='form-guidance-list'>
+            <div>
+                <strong>Be specific</strong>
+                <p>Explain what you need and what outcome you expect.</p>
+            </div>
+
+            <div>
+                <strong>Add context</strong>
+                <p>Include client name, document type, deadline, or reference details.</p>
+            </div>
+
+            <div>
+                <strong>Attach files</strong>
+                <p>Upload supporting documents if the request depends on them.</p>
+            </div>
+        </div>
+    </aside>
+
+</section>
+
+{% endblock %}

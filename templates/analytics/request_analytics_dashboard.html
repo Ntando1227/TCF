@@ -1,0 +1,500 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+
+<section class='page-header'>
+    <p class='eyebrow'>Operations Intelligence</p>
+
+    <h2>Request Analytics Dashboard</h2>
+
+    <p>
+        Monitor request volume, completion, responses, downloads,
+        client confirmations, staff output, and workflow movement.
+    </p>
+
+    <div class='hero-actions'>
+        <a class='btn primary' href='{% url "ai_summary_centre" %}'>
+            AI Summary Centre
+        </a>
+
+        <a class='btn secondary' href='{% url "generate_ai_summary" %}?type=requests'>
+            Summarise This Analytics
+        </a>
+
+        <a class='btn secondary' href='{% url "exports_home" %}'>
+            Back to Exports
+        </a>
+    </div>
+</section>
+
+<section class='stats-grid'>
+    <div class='stat-card'>
+        <span>{{ stats.total_requests }}</span>
+        <p>Total Requests</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ stats.completed_requests }}</span>
+        <p>Completed</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ stats.pending_requests }}</span>
+        <p>Pending</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ stats.completion_rate }}%</span>
+        <p>Completion Rate</p>
+    </div>
+</section>
+
+<section class='stats-grid'>
+    <div class='stat-card'>
+        <span>{{ stats.total_responses }}</span>
+        <p>Responses Sent</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ stats.total_downloads }}</span>
+        <p>Response Downloads</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ stats.response_rate }}%</span>
+        <p>Response Rate</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ stats.confirmation_rate }}%</span>
+        <p>Confirmation Rate</p>
+    </div>
+</section>
+
+<section class='stats-grid'>
+    <div class='stat-card'>
+        <span>{{ stats.accepted_responses }}</span>
+        <p>Accepted Responses</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ stats.changes_requested_responses }}</span>
+        <p>Changes Requested</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ stats.pending_confirmations }}</span>
+        <p>Pending Confirmations</p>
+    </div>
+
+    <div class='stat-card'>
+        <span>{{ stats.acceptance_rate }}%</span>
+        <p>Acceptance Rate</p>
+    </div>
+</section>
+
+<section class='analytics-grid'>
+
+    <div class='panel'>
+        <div class='panel-header'>
+            <h3>Status Breakdown</h3>
+            <p>Current request pipeline</p>
+        </div>
+
+        <div class='metric-list'>
+            {% for item in status_breakdown %}
+                <div class='metric-row'>
+                    <div>
+                        <span class='status-pill {{ item.class_name }}'>
+                            {{ item.label }}
+                        </span>
+                    </div>
+
+                    <strong>{{ item.count }}</strong>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class='panel'>
+        <div class='panel-header'>
+            <h3>Delivery Confirmation Breakdown</h3>
+            <p>Client response confirmations</p>
+        </div>
+
+        <div class='metric-list'>
+            {% for item in delivery_breakdown %}
+                <div class='metric-row'>
+                    <div>
+                        <span class='confirmation-badge {{ item.class_name }}'>
+                            {{ item.label }}
+                        </span>
+                    </div>
+
+                    <strong>{{ item.count }}</strong>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</section>
+
+<section class='analytics-grid'>
+
+    <div class='panel'>
+        <div class='panel-header'>
+            <h3>Request Types</h3>
+            <p>Most common request categories</p>
+        </div>
+
+        <div class='metric-list'>
+            {% for item in type_breakdown %}
+                <div class='metric-row'>
+                    <span>{{ item.label }}</span>
+                    <strong>{{ item.count }}</strong>
+                </div>
+            {% empty %}
+                <div class='empty-state compact-empty'>
+                    <h3>No request types yet</h3>
+                    <p>Submit requests to see this breakdown.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class='panel'>
+        <div class='panel-header'>
+            <h3>Delivery Health</h3>
+            <p>Response quality signals</p>
+        </div>
+
+        <div class='metric-list'>
+            <div class='metric-row'>
+                <span>Acceptance Rate</span>
+                <strong>{{ stats.acceptance_rate }}%</strong>
+            </div>
+
+            <div class='metric-row'>
+                <span>Change Request Rate</span>
+                <strong>{{ stats.change_request_rate }}%</strong>
+            </div>
+
+            <div class='metric-row'>
+                <span>Pending Confirmation</span>
+                <strong>{{ stats.pending_confirmations }}</strong>
+            </div>
+
+            <div class='metric-row'>
+                <span>Total Downloads</span>
+                <strong>{{ stats.total_downloads }}</strong>
+            </div>
+        </div>
+    </div>
+
+</section>
+
+<section class='panel'>
+    <div class='panel-header'>
+        <h3>Monthly Request Volume</h3>
+        <p>Request trends over time</p>
+    </div>
+
+    {% if monthly_volume %}
+        <div class='bar-chart'>
+            {% for item in monthly_volume %}
+                <div class='bar-row'>
+                    <div class='bar-label'>{{ item.month }}</div>
+
+                    <div class='bar-track'>
+                        <div class='bar-fill' style='width: {% widthratio item.count stats.total_requests 100 %}%;'>
+                            {{ item.count }}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class='empty-state'>
+            <h3>No monthly data yet</h3>
+            <p>Requests will appear here once submitted.</p>
+        </div>
+    {% endif %}
+</section>
+
+<section class='analytics-grid'>
+
+    <div class='panel'>
+        <div class='panel-header'>
+            <h3>Most Active Clients</h3>
+            <p>Users submitting the most requests</p>
+        </div>
+
+        <div class='table-wrap'>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Client</th>
+                        <th>Requests</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for client in top_clients %}
+                        <tr>
+                            <td>{{ client.submitted_by__username|default:'Unknown' }}</td>
+                            <td>{{ client.total }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan='2'>No client data yet.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class='panel'>
+        <div class='panel-header'>
+            <h3>Most Active Staff</h3>
+            <p>Users responding to requests</p>
+        </div>
+
+        <div class='table-wrap'>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Staff</th>
+                        <th>Responses</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for staff in top_staff %}
+                        <tr>
+                            <td>{{ staff.responded_by__username|default:'Unknown' }}</td>
+                            <td>{{ staff.total }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan='2'>No staff response data yet.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</section>
+
+<section class='panel'>
+    <div class='panel-header'>
+        <h3>Recent Confirmations</h3>
+        <p>Latest client delivery feedback</p>
+    </div>
+
+    <div class='table-wrap'>
+        <table>
+            <thead>
+                <tr>
+                    <th>Request</th>
+                    <th>Confirmation</th>
+                    <th>Confirmed By</th>
+                    <th>Confirmed At</th>
+                    <th>Open</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for response in recent_confirmations %}
+                    <tr>
+                        <td>{{ response.service_request.title }}</td>
+
+                        <td>
+                            <span class='confirmation-badge confirmation-{{ response.confirmation_status }}'>
+                                {{ response.get_confirmation_status_display }}
+                            </span>
+                        </td>
+
+                        <td>{{ response.confirmed_by.username|default:'Unknown' }}</td>
+                        <td>{{ response.confirmed_at|date:'d M Y H:i' }}</td>
+
+                        <td>
+                            <a class='mini-btn' href='{% url "request_detail" response.service_request.id %}'>
+                                Open
+                            </a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan='5'>No confirmations yet.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class='panel'>
+    <div class='panel-header'>
+        <h3>Recent Requests</h3>
+        <p>Latest incoming work</p>
+    </div>
+
+    <div class='table-wrap'>
+        <table>
+            <thead>
+                <tr>
+                    <th>Request</th>
+                    <th>Status</th>
+                    <th>Submitted By</th>
+                    <th>Created</th>
+                    <th>Open</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for item in recent_requests %}
+                    <tr>
+                        <td>{{ item.title }}</td>
+
+                        <td>
+                            <span class='status-pill request-status-{{ item.status }}'>
+                                {{ item.get_status_display }}
+                            </span>
+                        </td>
+
+                        <td>{{ item.submitted_by.username }}</td>
+                        <td>{{ item.created_at|date:'d M Y H:i' }}</td>
+
+                        <td>
+                            <a class='mini-btn' href='{% url "request_detail" item.id %}'>
+                                Open
+                            </a>
+                        </td>
+                    </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan='5'>No recent requests yet.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class='analytics-grid'>
+
+    <div class='panel'>
+        <div class='panel-header'>
+            <h3>Recent Responses</h3>
+            <p>Latest staff fulfilment activity</p>
+        </div>
+
+        <div class='timeline'>
+            {% for response in recent_responses %}
+                <div class='timeline-item'>
+                    <div class='timeline-dot'></div>
+
+                    <div>
+                        <h4>{{ response.service_request.title }}</h4>
+
+                        <p>
+                            Responded by
+                            {{ response.responded_by.username|default:'Staff' }}
+                            on {{ response.responded_at|date:'d M Y H:i' }}
+                        </p>
+
+                        <p>
+                            Downloads: {{ response.download_count }}
+                        </p>
+                    </div>
+                </div>
+            {% empty %}
+                <div class='empty-state compact-empty'>
+                    <h3>No responses yet</h3>
+                    <p>Responses will show here after staff fulfil requests.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class='panel'>
+        <div class='panel-header'>
+            <h3>Latest Downloads</h3>
+            <p>Response attachments accessed by users</p>
+        </div>
+
+        <div class='timeline'>
+            {% for response in latest_downloads %}
+                <div class='timeline-item'>
+                    <div class='timeline-dot'></div>
+
+                    <div>
+                        <h4>{{ response.service_request.title }}</h4>
+
+                        <p>
+                            Downloaded by
+                            {{ response.last_downloaded_by.username|default:'Unknown' }}
+                            on {{ response.last_downloaded_at|date:'d M Y H:i' }}
+                        </p>
+
+                        <p>
+                            Total downloads: {{ response.download_count }}
+                        </p>
+                    </div>
+                </div>
+            {% empty %}
+                <div class='empty-state compact-empty'>
+                    <h3>No downloads yet</h3>
+                    <p>Download activity appears once users download responses.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+</section>
+
+<section class='panel'>
+    <div class='panel-header'>
+        <h3>Recent Timeline Events</h3>
+        <p>Workflow movement across requests</p>
+    </div>
+
+    <div class='request-timeline'>
+        {% for event in recent_timeline_events %}
+            <div class='request-timeline-item'>
+                <div class='request-timeline-icon'>
+                    {{ forloop.counter }}
+                </div>
+
+                <div class='request-timeline-content'>
+                    <div class='timeline-title-row'>
+                        <h4>{{ event.title }}</h4>
+                        <span>{{ event.created_at|date:'d M Y H:i' }}</span>
+                    </div>
+
+                    <p>{{ event.description }}</p>
+
+                    <div class='timeline-meta'>
+                        <span>{{ event.service_request.title }}</span>
+                        <span>{{ event.get_action_display }}</span>
+
+                        {% if event.actor %}
+                            <span>By {{ event.actor.username }}</span>
+                        {% else %}
+                            <span>System</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class='empty-state'>
+                <h3>No timeline events yet</h3>
+                <p>Request activity will appear here.</p>
+            </div>
+        {% endfor %}
+    </div>
+</section>
+
+{% endblock %}

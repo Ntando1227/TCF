@@ -1,0 +1,58 @@
+﻿{% extends 'base.html' %}
+
+{% block content %}
+
+<section class='page-header'>
+    <p class='eyebrow'>Folder Automation</p>
+
+    <h2>Create Client Folder</h2>
+
+    <p>
+        {% if can_manage_all %}
+            Create a folder and assign it to a user.
+        {% else %}
+            Create a client folder assigned to your account.
+        {% endif %}
+    </p>
+</section>
+
+<section class='panel form-panel'>
+
+    <form method='post'>
+
+        {% csrf_token %}
+
+        <div class='form-grid'>
+
+            {% for field in form %}
+
+                <div class='form-group'>
+                    {{ field.label_tag }}
+                    {{ field }}
+
+                    {% if field.errors %}
+                        <div class='field-error'>
+                            {{ field.errors }}
+                        </div>
+                    {% endif %}
+                </div>
+
+            {% endfor %}
+
+        </div>
+
+        <div class='hero-actions'>
+            <button class='btn primary' type='submit'>
+                Create Folder
+            </button>
+
+            <a class='btn secondary' href='{% url "client_folder_list" %}'>
+                Cancel
+            </a>
+        </div>
+
+    </form>
+
+</section>
+
+{% endblock %}

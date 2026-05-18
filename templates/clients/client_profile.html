@@ -1,0 +1,160 @@
+﻿{% extends 'base.html' %}
+
+{% block page_title %}
+Client Profile
+{% endblock %}
+
+{% block content %}
+
+<section class='client-profile-hero'>
+    <div>
+        <p class='eyebrow'>Client Profile</p>
+        <h2>{{ folder.client_name }}</h2>
+        <p>
+            Client contact details, linked requests, files, documents,
+            and workspace activity in one place.
+        </p>
+    </div>
+
+    <div class='client-clean-actions'>
+        <a class='btn secondary' href='{% url "client_folder_list" %}'>Back to Clients</a>
+        <a class='btn primary' href='{% url "create_request" %}'>Create Request</a>
+    </div>
+</section>
+
+<section class='client-profile-layout'>
+
+    <aside class='client-profile-side'>
+
+        <section class='client-clean-panel'>
+            <div class='panel-header'>
+                <h3>Contact Details</h3>
+                <p>Primary client information.</p>
+            </div>
+
+            <div class='client-detail-list'>
+                <div>
+                    <span>Name</span>
+                    <strong>{{ folder.client_name }}</strong>
+                </div>
+
+                <div>
+                    <span>Email</span>
+                    <strong>{{ folder.client_email|default:'Not provided' }}</strong>
+                </div>
+
+                <div>
+                    <span>Phone</span>
+                    <strong>{{ folder.client_phone|default:'Not provided' }}</strong>
+                </div>
+
+                <div>
+                    <span>Status</span>
+                    <strong>{{ folder.get_status_display|default:'Active' }}</strong>
+                </div>
+
+                <div>
+                    <span>Created</span>
+                    <strong>{{ folder.created_at|date:'d M Y' }}</strong>
+                </div>
+            </div>
+        </section>
+
+        <section class='client-clean-panel'>
+            <div class='panel-header'>
+                <h3>Notes</h3>
+            </div>
+
+            {% if folder.notes %}
+                <p class='client-note-box'>{{ folder.notes }}</p>
+            {% else %}
+                <div class='clean-empty-state compact-empty'>
+                    <h3>No notes</h3>
+                    <p>Client notes will appear here once added.</p>
+                </div>
+            {% endif %}
+        </section>
+
+    </aside>
+
+    <div class='client-profile-main'>
+
+        <section class='client-clean-panel'>
+            <div class='panel-header'>
+                <h3>Linked Requests</h3>
+                <p>Requests connected to this client.</p>
+            </div>
+
+            <div class='client-list'>
+                {% for request_item in requests %}
+                    <a class='client-list-link' href='{% url "request_detail" request_item.id %}'>
+                        <div>
+                            <strong>{{ request_item.title }}</strong>
+                            <p>{{ request_item.get_request_type_display }} · {{ request_item.created_at|date:'d M Y' }}</p>
+                        </div>
+
+                        <span class='status-pill status-{{ request_item.status }}'>
+                            {{ request_item.get_status_display }}
+                        </span>
+                    </a>
+                {% empty %}
+                    <div class='clean-empty-state'>
+                        <div class='empty-icon'>⌕</div>
+                        <h3>No linked requests</h3>
+                        <p>Requests linked to this client will appear here.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class='client-clean-panel'>
+            <div class='panel-header'>
+                <h3>Files</h3>
+                <p>Client files, uploads, and delivered documents.</p>
+            </div>
+
+            <div class='client-file-grid'>
+                {% for file in files %}
+                    <a class='client-file-card' href='{% url "preview_client_file" file.id %}'>
+                        <span>FILE</span>
+                        <strong>{{ file.title }}</strong>
+                        <p>{{ file.get_status_display }} · {{ file.uploaded_at|date:'d M Y' }}</p>
+                    </a>
+                {% empty %}
+                    <div class='clean-empty-state'>
+                        <div class='empty-icon'>□</div>
+                        <h3>No files yet</h3>
+                        <p>Client files and uploaded deliverables will appear here.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class='client-clean-panel'>
+            <div class='panel-header'>
+                <h3>Documents</h3>
+                <p>Generated documents connected to this client.</p>
+            </div>
+
+            <div class='client-file-grid'>
+                {% for document in documents %}
+                    <a class='client-file-card' href='{% url "download_document" document.id %}'>
+                        <span>DOC</span>
+                        <strong>{{ document.title }}</strong>
+                        <p>{{ document.document_type }} · {{ document.created_at|date:'d M Y' }}</p>
+                    </a>
+                {% empty %}
+                    <div class='clean-empty-state'>
+                        <div class='empty-icon'>◇</div>
+                        <h3>No documents yet</h3>
+                        <p>Generated documents for this client will appear here.</p>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+
+    </div>
+
+</section>
+
+{% endblock %}
